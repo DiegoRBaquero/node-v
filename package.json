@@ -1,0 +1,33 @@
+{
+  "name": "v",
+  "version": "1.0.0",
+  "description": "Cloud hosted variables & constants",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && faucet test/*.js"
+  },
+  "keywords": [
+    "var",
+    "variable",
+    "variables",
+    "hosted",
+    "online",
+    "cloud",
+    "state",
+    "app",
+    "config"
+  ],
+  "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.16.0",
+    "faucet": "0.0.1",
+    "tape": "^4.6.3"
+  },
+  "dependencies": {
+    "request": "^2.75.0",
+    "uuid": "^2.0.3"
+  }
+}
