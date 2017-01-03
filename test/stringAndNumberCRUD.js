@@ -1,17 +1,18 @@
 const test = require('tape')
+const debug = require('debug')('test')
 
 const V = require('../')
 
 test('New V', t => {
-  t.plan(2)
+  t.plan(1)
 
   let v = new V() // Init with new ID
   let id = v._id
 
   t.equal(Object.keys(v).length, 0, 'Empty keys')
-  t.equal(Object.getOwnPropertyNames(v).length, 1, 'Only _id in property names')
   test('Reload Empty', t => {
     t.plan(1)
+    v.close()
     v = new V(id)
 
     t.equal(v._id, id, 'ID is the same')
@@ -78,6 +79,13 @@ test('New V', t => {
                   t.equal(Object.keys(v).length, 0, 'Keys length of 0')
                   t.equal(v.a, undefined, '`a` key is undefined')
                   t.equal(v.b, undefined, '`b` key is undefined')
+                  debug('closing')
+                  v.close()
+                  // setTimeout(function () {
+                  //   debug('%O', process._getActiveHandles())
+                  //   debug('============')
+                  //   debug('%O', process._getActiveRequests())
+                  // }, 1000)
                 })
               })
             })

@@ -1,64 +1,99 @@
-const uuid = require('uuid')
-const request = require('request')
+const debug = require('debug')('V')
+const WebSocket = require('uws')
 
 class V {
   constructor (id) {
-    if (!id) {
-      // TODO get new ID
-      id = uuid.v4()
-      console.log(`Use ${id} as as your V ID`)
+    let self = this
+
+    function initWithId (id) {
+      debug('Init %s', id)
+      Object.defineProperty(self, '_id', { value: id })
+      let handler = {
+        get (obj, key) {
+          debug('get %s', key)
+          if (key in obj) return obj[key]
+          return undefined
+        },
+        set (obj, key, val) {
+          debug('set %s', key)
+          obj[key] = val
+          return true
+        },
+        deleteProperty (obj, key, val) {
+          debug('deleteProperty %s', key)
+          delete obj[key]
+        },
+        enumerate (obj) {
+          debug('enumerate')
+          return Object.keys(obj).filter(val => val[0] === '_')
+        },
+        keys () {
+          debug('keys')
+        }
+      }
+      proxy = new Proxy(self, handler)
+      debug('hola')
     }
-    Object.defineProperty(this, '_id', { value: id })
-    return new Proxy(this, {
-      get (obj, key) {
-        if (key in obj) return obj[key]
-        return undefined
-      },
-      set (obj, key, val) {
-        // console.log(obj)
-        // console.log(`Set ${key}`)
-        obj[key] = val
-      },
-      deleteProperty (obj, key, val) {
-        // console.log(`Delete ${key}`)
-        delete obj[key]
-      },
-      enumerate () {
-        return this.keys()
+    function onMessage (message) {
+      try {
+        message = JSON.parse(message)
+      } catch (e) {}
+      if (typeof message === 'string') {
+        debug(message)
+        switch (message) {
+          default:
+            debug('Message not handled')
+            break
+        }
+      } else {
+        debug('Object %O', message)
+        switch (message.type) {
+          case 'id':
+            initWithId(message.data)
+            break
+          default:
+            debug('Message type not handled')
+            break
+        }
+      }
+    }
+    function onClose (reason) {
+      debug('Socket closed %s', reason)
+    }
+
+    let socket = new WebSocket('ws://localhost:3000')
+
+    Object.defineProperty(this, '_socket', { value: socket })
+
+    var proxy
+
+    socket.on('message', onMessage)
+    socket.on('close', onClose)
+    socket.on('open', () => {
+      debug('Socket opened')
+
+      if (!id) {
+        debug('Requesting ID...')
+        socket.send('requestID')
+      } else {
+        initWithId(id)
       }
     })
+
+    while (proxy === undefined) {
+      proxy = proxy || undefined
+      require('deasync').sleep(100)
+    }
+
+    debug('Returning')
+
+    return proxy
   }
 
-  var (name, initVal) {
-    this._values[name] = initVal
-    Object.defineProperty(this, name, {
-      get () {
-        let val = this._values[name]
-        console.log(`Se envía ${val}`)
-        return val
-      },
-      set (val) {
-        request('http://google.com', (err, res, body) => {
-          if (err) console.error(err)
-          console.log('body')
-        })
-        console.log(`Se guardó ${val}`)
-        this._values[name] = val
-      },
-      enumerable: true
-    })
-  }
-
-  const (name, val) {
-    this._values[name] = val
-    Object.defineProperty(this, name, {
-      get () {
-        let val = this._values[name]
-        console.log(`Se envía ${val}`)
-        return val
-      },
-      enumerable: true
-    })
+  close () {
+    if (this._socket) {
+      this._socket.close()
+    }
   }
 }
 
