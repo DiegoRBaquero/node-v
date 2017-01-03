@@ -1,9 +1,23 @@
 const debug = require('debug')('V')
-const WebSocket = require('uws')
+
+let WebSocket
+try {
+  WebSocket = require('uws')
+} catch (e) {
+  debug('Could not use uws, trying ws')
+  WebSocket = require('ws')
+}
 
 class V {
   constructor (id) {
     let self = this
+    let proxy, deasync
+
+    try {
+      deasync = require('deasync')
+    } catch (e) {
+      throw new Error('Can\'t load deasync module. Please use V.init with promise or cb')
+    }
 
     function initWithId (id) {
       debug('Init %s', id)
@@ -65,8 +79,6 @@ class V {
 
     Object.defineProperty(this, '_socket', { value: socket })
 
-    var proxy
-
     socket.on('message', onMessage)
     socket.on('close', onClose)
     socket.on('open', () => {
@@ -82,7 +94,7 @@ class V {
 
     while (proxy === undefined) {
       proxy = proxy || undefined
-      require('deasync').sleep(100)
+      deasync.sleep(100)
     }
 
     debug('Returning')
