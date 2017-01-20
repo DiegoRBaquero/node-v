@@ -1,9 +1,11 @@
+# Created by .ignore support plugin (hsz.mobi)
 logs
 *.log
 npm-debug.log*
 pids
 *.pid
 *.seed
+*.pid.lock
 lib-cov
 coverage
 .nyc_output
@@ -13,8 +15,17 @@ build/Release
 node_modules
 jspm_packages
 .npm
+.eslintcache
 .node_repl_history
+*.tgz
+.yarn-integrity
 .idea/
+*.iml
+out
+gen
+.npmignore
+examples/
+test/
 _ignore/
 comparison/
-lib/
+index.js

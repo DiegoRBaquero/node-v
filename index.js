@@ -9,8 +9,9 @@ try {
 }
 
 class V {
-  constructor (id) {
-    let self = this
+  constructor (uuid) {
+    debug('constructor')
+    const self = this
     let proxy, deasync
 
     try {
@@ -20,22 +21,29 @@ class V {
     }
 
     function initWithId (id) {
-      debug('Init %s', id)
+      debug('Init with id: %s', id)
       Object.defineProperty(self, '_id', { value: id })
-      let handler = {
+      init()
+    }
+    function init () {
+      debug('Init')
+      const handler = {
         get (obj, key) {
-          debug('get %s', key)
+          if (!key.startsWith('_')) debug('get %s', key)
           if (key in obj) return obj[key]
           return undefined
         },
         set (obj, key, val) {
           debug('set %s', key)
           obj[key] = val
+          self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
           return true
         },
-        deleteProperty (obj, key, val) {
+        deleteProperty (obj, key) {
           debug('deleteProperty %s', key)
           delete obj[key]
+          self._socket.send(JSON.stringify({ type: 'delete', key: key }))
+          return true
         },
         enumerate (obj) {
           debug('enumerate')
@@ -46,23 +54,43 @@ class V {
         }
       }
       proxy = new Proxy(self, handler)
-      debug('hola')
     }
     function onMessage (message) {
       try {
         message = JSON.parse(message)
       } catch (e) {}
       if (typeof message === 'string') {
-        debug(message)
+        debug('Message: %s', message)
         switch (message) {
+          case 'start':
+            init()
+            break
           default:
             debug('Message not handled')
             break
         }
       } else {
-        debug('Object %O', message)
+        debug('Message: %o', message)
         switch (message.type) {
+          case 'start':
+            const data = message.data
+            const vars = data.vars
+            debug('vars: %O', vars)
+            for (const key in vars) {
+              const varOrConst = vars[key]
+              debug(typeof varOrConst)
+              if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
+                debug('Rehidrating const')
+                Object.defineProperties(self, key, { value: vars[key].val, enumerable: true })
+              } else {
+                debug('Rehidrating var')
+                self[key] = vars[key]
+              }
+            }
+            init()
+            break
           case 'id':
+            console.log(`Use ${message.data} as your UUID`)
             initWithId(message.data)
             break
           default:
@@ -75,7 +103,7 @@ class V {
       debug('Socket closed %s', reason)
     }
 
-    let socket = new WebSocket('ws://localhost:3000')
+    const socket = new WebSocket('wss://api.vars.online')
 
     Object.defineProperty(this, '_socket', { value: socket })
 
@@ -84,18 +112,16 @@ class V {
     socket.on('open', () => {
       debug('Socket opened')
 
-      if (!id) {
-        debug('Requesting ID...')
-        socket.send('requestID')
+      if (!uuid) {
+        debug('Requesting UUID...')
+        socket.send('requestId')
       } else {
-        initWithId(id)
+        Object.defineProperty(self, '_uuid', { value: uuid })
+        socket.send(stringify({ type: 'startWithId', data: uuid }))
       }
     })
 
-    while (proxy === undefined) {
-      proxy = proxy || undefined
-      deasync.sleep(100)
-    }
+    deasync.loopWhile(() => proxy === undefined)
 
     debug('Returning')
 
@@ -107,6 +133,10 @@ class V {
       this._socket.close()
     }
   }
+}
+
+function stringify (data) {
+  return JSON.stringify(data)
 }
 
 module.exports = V
