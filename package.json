@@ -40,7 +40,7 @@
     "deasync": "^0.1.9"
   },
   "scripts": {
-    "prepublish": "babili index.js > lib/v.js ",
+    "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
     "test": "standard && bogota test/*.js"
   }
 }
