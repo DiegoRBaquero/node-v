@@ -1,28 +1,13 @@
 {
   "name": "v",
-  "version": "0.1.2",
   "description": "Synchronized, realtime, cloud hosted, native JavaScript variables and constants",
-  "main": "lib/v.js",
-  "scripts": {
-    "test": "standard && bogota test/*.js"
-  },
-  "keywords": [
-    "var",
-    "variable",
-    "variables",
-    "hosted",
-    "online",
-    "cloud",
-    "state",
-    "app",
-    "config",
-    "constant",
-    "constants",
-    "synchronized",
-    "sync"
-  ],
+  "version": "0.1.2",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
-  "license": "MIT",
+  "dependencies": {
+    "debug": "^2.6.0",
+    "uuid": "^2.0.3",
+    "ws": "^1.1.1"
+  },
   "devDependencies": {
     "babili": "0.0.11",
     "bogota": "^1.0.3",
@@ -30,16 +15,32 @@
     "standard": "^8.6.0",
     "tape": "^4.6.3"
   },
-  "dependencies": {
-    "debug": "^2.6.0",
-    "uuid": "^2.0.3",
-    "ws": "^1.1.1"
-  },
-  "optionalDependencies": {
-    "deasync": "^0.1.9"
-  },
+  "engineStrict": true,
   "engines": {
     "node": ">=6.0.0"
   },
-  "engineStrict": true
+  "keywords": [
+    "app",
+    "cloud",
+    "config",
+    "constant",
+    "constants",
+    "hosted",
+    "online",
+    "state",
+    "sync",
+    "synchronized",
+    "var",
+    "variable",
+    "variables"
+  ],
+  "license": "MIT",
+  "main": "lib/v.js",
+  "optionalDependencies": {
+    "deasync": "^0.1.9"
+  },
+  "scripts": {
+    "prepublish": "babili index.js > lib/v.js ",
+    "test": "standard && bogota test/*.js"
+  }
 }
