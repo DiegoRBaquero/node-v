@@ -35,22 +35,20 @@ class V {
         },
         set (obj, key, val) {
           debug('set %s', key)
-          obj[key] = val
-          self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
-          return true
+          try {
+            obj[key] = val
+            self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
+            return true
+          } catch (e) {
+            debug('Failed to set')
+            return false
+          }
         },
         deleteProperty (obj, key) {
           debug('deleteProperty %s', key)
           delete obj[key]
           self._socket.send(JSON.stringify({ type: 'delete', key: key }))
           return true
-        },
-        enumerate (obj) {
-          debug('enumerate')
-          return Object.keys(obj).filter(val => val[0] === '_')
-        },
-        keys () {
-          debug('keys')
         }
       }
       proxy = new Proxy(self, handler)
@@ -66,8 +64,7 @@ class V {
             init()
             break
           default:
-            debug('Message not handled')
-            break
+            onError('Message not hanlded')
         }
       } else {
         debug('Message: %o', message)
@@ -80,10 +77,10 @@ class V {
               const varOrConst = vars[key]
               debug(typeof varOrConst)
               if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
-                debug('Rehidrating const')
-                Object.defineProperties(self, key, { value: vars[key].val, enumerable: true })
+                debug('Rehidrating constant')
+                Object.defineProperty(self, key, { value: vars[key].val, enumerable: true })
               } else {
-                debug('Rehidrating var')
+                debug('Rehidrating variable')
                 self[key] = vars[key]
               }
             }
@@ -94,13 +91,16 @@ class V {
             initWithId(message.data)
             break
           default:
-            debug('Message type not handled')
-            break
+            onError('Message type not handled')
         }
       }
     }
     function onClose (reason) {
       debug('Socket closed %s', reason)
+    }
+    function onError (err = 'Error') {
+      self.close()
+      throw new Error(err)
     }
 
     const socket = new WebSocket('wss://api.vars.online')
@@ -137,6 +137,11 @@ class V {
   destroy () {
     this._socket.send('destroy')
     this.close()
+  }
+
+  const (key, val) {
+    Object.defineProperty(this, key, { value: val, enumerable: true })
+    this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
   }
 }
 
