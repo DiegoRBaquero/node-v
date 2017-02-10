@@ -1,7 +1,7 @@
 const test = require('tape')
 const debug = require('debug')('test')
 
-const V = require('../')
+const V = require('../index')
 
 test('New V', t => {
   t.plan(1)
@@ -79,7 +79,7 @@ test('New V', t => {
                   t.equal(Object.keys(v).length, 0, 'Keys length of 0')
                   t.equal(v.a, undefined, '`a` key is undefined')
                   t.equal(v.b, undefined, '`b` key is undefined')
-                  debug('closing')
+                  debug('destroying')
                   v.destroy()
                 })
               })

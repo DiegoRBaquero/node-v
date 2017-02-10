@@ -1,7 +1,7 @@
 const test = require('tape')
 // const debug = require('debug')('test')
 
-const V = require('../')
+const V = require('../index')
 
 test('New V - Empty ID', t => {
   t.plan(1)
