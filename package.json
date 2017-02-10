@@ -36,8 +36,7 @@
     "ws": "^1.1.1"
   },
   "optionalDependencies": {
-    "deasync": "^0.1.9",
-    "uws": "^0.12.0"
+    "deasync": "^0.1.9"
   },
   "engines": {
     "node": ">=6.0.0"
