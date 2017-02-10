@@ -1,12 +1,5 @@
 const debug = require('debug')('V')
-
-let WebSocket
-try {
-  WebSocket = require('uws')
-} catch (e) {
-  debug('Could not use uws, trying ws')
-  WebSocket = require('ws')
-}
+const WebSocket = require('ws')
 
 class V {
   constructor (uuid) {
@@ -30,17 +23,17 @@ class V {
         debug('set %s', key)
         try {
           obj[key] = val
-          self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
+          if (!self._closed) self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
           return true
         } catch (e) {
-          debug('Failed to set')
+          debug('Failed to set readonly property')
           return false
         }
       },
       deleteProperty (obj, key) {
         debug('deleteProperty %s', key)
         delete obj[key]
-        self._socket.send(JSON.stringify({ type: 'delete', key: key }))
+        if (!self._closed) self._socket.send(JSON.stringify({ type: 'delete', key: key }))
         return true
       }
     }
