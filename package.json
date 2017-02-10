@@ -1,6 +1,6 @@
 {
   "name": "v",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Synchronized, realtime, cloud hosted, native JavaScript variables and constants",
   "main": "lib/v.js",
   "scripts": {
