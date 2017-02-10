@@ -20,6 +20,31 @@ class V {
       throw new Error('Can\'t load deasync module. Please use V.init with promise or cb')
     }
 
+    const handler = {
+      get (obj, key) {
+        if (!key.startsWith('_')) debug('get %s', key)
+        if (key in obj) return obj[key]
+        return undefined
+      },
+      set (obj, key, val) {
+        debug('set %s', key)
+        try {
+          obj[key] = val
+          self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
+          return true
+        } catch (e) {
+          debug('Failed to set')
+          return false
+        }
+      },
+      deleteProperty (obj, key) {
+        debug('deleteProperty %s', key)
+        delete obj[key]
+        self._socket.send(JSON.stringify({ type: 'delete', key: key }))
+        return true
+      }
+    }
+
     function initWithId (id) {
       debug('Init with id: %s', id)
       Object.defineProperty(self, '_uuid', { value: id })
@@ -27,30 +52,6 @@ class V {
     }
     function init () {
       debug('Init')
-      const handler = {
-        get (obj, key) {
-          if (!key.startsWith('_')) debug('get %s', key)
-          if (key in obj) return obj[key]
-          return undefined
-        },
-        set (obj, key, val) {
-          debug('set %s', key)
-          try {
-            obj[key] = val
-            self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
-            return true
-          } catch (e) {
-            debug('Failed to set')
-            return false
-          }
-        },
-        deleteProperty (obj, key) {
-          debug('deleteProperty %s', key)
-          delete obj[key]
-          self._socket.send(JSON.stringify({ type: 'delete', key: key }))
-          return true
-        }
-      }
       proxy = new Proxy(self, handler)
     }
     function onMessage (message) {
@@ -90,6 +91,23 @@ class V {
             console.log(`Use ${message.data} as your UUID`)
             initWithId(message.data)
             break
+          case 'set':
+            const setKey = message.key
+            debug('sync set %s', setKey)
+            try {
+              self[setKey] = message.data
+            } catch (e) {
+              debug('Failed to sync set')
+            }
+            break
+          case 'delete':
+            const deleteKey = message.key
+            debug('sync delete %s', deleteKey)
+            delete self[deleteKey]
+            break
+          case 'destroy':
+            self.close()
+            break
           default:
             onError('Message type not handled')
         }
@@ -109,6 +127,7 @@ class V {
 
     socket.on('message', onMessage)
     socket.on('close', onClose)
+    socket.on('error', onError)
     socket.on('open', () => {
       debug('Socket opened')
 
@@ -131,12 +150,14 @@ class V {
   close () {
     if (this._socket) {
       this._socket.close()
+      this._closed = true
     }
   }
 
   destroy () {
-    this._socket.send('destroy')
+    this._socket.send(stringify({ type: 'destroy' }))
     this.close()
+    this._destroyed = true
   }
 
   const (key, val) {
