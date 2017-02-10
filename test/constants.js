@@ -7,9 +7,9 @@ test('Constants - Read only', t => {
   const v = new V()
   t.pass('Construct with no ID worked')
   v.const('c', 10)
-  t.equals(v.c, 10, 'c equals 10')
+  t.equals(v.c, 10, 'Value is saved')
   v.c = 20
-  t.equals(v.c, 10, 'c equals 10')
+  t.equals(v.c, 10, 'Value is unchanged after set')
   v.destroy()
 })
 
@@ -26,7 +26,7 @@ test('Constants - Persisted', t => {
 
   v = new V(uuid)
   t.pass('Construct with same ID worked')
-  t.equals(v.c, 10, 'Value remains the same')
+  t.equals(v.c, 10, 'Value is the same after rehidration')
   v.c = 20
   t.equals(v.c, 10, 'Value remains read only')
   v.destroy()

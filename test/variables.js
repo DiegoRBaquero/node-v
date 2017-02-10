@@ -7,9 +7,9 @@ test('Variables - Write', t => {
   const v = new V()
   t.pass('Construct with no ID worked')
   v.a = 10
-  t.equals(v.a, 10, 'a equals 10')
+  t.equals(v.a, 10, 'Value is saved')
   v.a = 20
-  t.equals(v.a, 20, 'a equals 20')
+  t.equals(v.a, 20, 'Value is changed on set')
   v.destroy()
 })
 
@@ -26,7 +26,7 @@ test('Variables - Persisted', t => {
 
   v = new V(uuid)
   t.pass('Construct with same ID worked')
-  t.equals(v.a, 10, 'Value remains the same')
+  t.equals(v.a, 10, 'Value is the same after rehidration')
   v.a = 20
   t.equals(v.a, 20, 'Value remains writeable')
   v.destroy()
