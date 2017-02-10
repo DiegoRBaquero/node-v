@@ -3,16 +3,17 @@ Synchronized, realtime, cloud hosted, native JavaScript variables and constants
 
 [![Build Status](https://travis-ci.com/DiegoRBaquero/V.svg?token=RmCH18hHqxd9wdtEPyix&branch=master)](https://travis-ci.com/DiegoRBaquero/V)
 
-V keeps your variables online and in sync!
+V extends your in-memory variables to also be saved/persisted instantly. Variables and constants are instantly synced
+between all your running instances of V. When you restart V, variables and constants are reloaded automatically.
 
 ### Current Features
 - Keeps your variables on the cloud
-- Automatic variables rehidration
+- Syncs variables between instances
+- Automatic variables rehidration (reloading)
 
-#### Requires NodeJS 6+, deasync, optional to use uws
+#### Requires NodeJS 6+, deasync
 
 ### TODO:
-- Sync instances
 - Web GUI
 - History - Time machine
 - Events pub/sub
