@@ -24,6 +24,7 @@
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "license": "MIT",
   "devDependencies": {
+    "standard": "^8.6.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.3"
   },
