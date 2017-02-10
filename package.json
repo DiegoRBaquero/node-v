@@ -1,7 +1,7 @@
 {
   "name": "v",
   "description": "Synchronized, realtime, cloud hosted, native JavaScript variables and constants",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
     "debug": "^2.6.0",
