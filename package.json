@@ -1,7 +1,7 @@
 {
   "name": "v",
   "version": "0.1.0",
-  "description": "Cloud-hosted variables & constants",
+  "description": "Synchronized, realtime, cloud hosted, native JavaScript variables and constants",
   "main": "lib/v.js",
   "scripts": {
     "test": "standard && tape test/*.js | tap-spec"
@@ -15,7 +15,11 @@
     "cloud",
     "state",
     "app",
-    "config"
+    "config",
+    "constant",
+    "constants",
+    "synchronized",
+    "sync"
   ],
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "license": "MIT",
