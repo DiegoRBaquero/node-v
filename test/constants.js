@@ -7,9 +7,9 @@ test('Constants - Read only', t => {
   const v = new V()
   t.pass('Construct with no ID worked')
   v.const('c', 10)
-  t.equals(v.c, 10)
+  t.equals(v.c, 10, 'c equals 10')
   v.c = 20
-  t.equals(v.c, 10)
+  t.equals(v.c, 10, 'c equals 10')
   v.destroy()
 })
 
