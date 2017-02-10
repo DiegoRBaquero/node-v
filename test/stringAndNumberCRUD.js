@@ -1,21 +1,21 @@
 const test = require('tape')
 const debug = require('debug')('test')
 
-const V = require('../lib/v')
+const V = require('../')
 
 test('New V', t => {
   t.plan(1)
 
   let v = new V() // Init with new ID
-  let id = v._id
+  let uuid = v._uuid
 
   t.equal(Object.keys(v).length, 0, 'Empty keys')
   test('Reload Empty', t => {
     t.plan(1)
     v.close()
-    v = new V(id)
+    v = new V(uuid)
 
-    t.equal(v._id, id, 'ID is the same')
+    t.equal(v._uuid, uuid, 'ID is the same')
 
     test('Create & Read string', t => {
       t.plan(3)
@@ -80,12 +80,7 @@ test('New V', t => {
                   t.equal(v.a, undefined, '`a` key is undefined')
                   t.equal(v.b, undefined, '`b` key is undefined')
                   debug('closing')
-                  v.close()
-                  // setTimeout(function () {
-                  //   debug('%O', process._getActiveHandles())
-                  //   debug('============')
-                  //   debug('%O', process._getActiveRequests())
-                  // }, 1000)
+                  v.destroy()
                 })
               })
             })

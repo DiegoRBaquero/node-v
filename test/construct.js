@@ -1,7 +1,7 @@
 const test = require('tape')
 // const debug = require('debug')('test')
 
-const V = require('../lib/v')
+const V = require('../')
 
 test('New V - Empty ID', t => {
   t.plan(1)

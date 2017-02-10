@@ -1,4 +1,4 @@
-const V = require('../lib/v')
+const V = require('../')
 const v = new V('counter-example')
 
 console.log(v.counter)

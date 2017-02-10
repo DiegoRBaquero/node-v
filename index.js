@@ -22,7 +22,7 @@ class V {
 
     function initWithId (id) {
       debug('Init with id: %s', id)
-      Object.defineProperty(self, '_id', { value: id })
+      Object.defineProperty(self, '_uuid', { value: id })
       init()
     }
     function init () {
@@ -132,6 +132,11 @@ class V {
     if (this._socket) {
       this._socket.close()
     }
+  }
+
+  destroy () {
+    this._socket.send('destroy')
+    this.close()
   }
 }
 
