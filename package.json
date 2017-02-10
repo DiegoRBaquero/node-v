@@ -4,7 +4,7 @@
   "description": "Synchronized, realtime, cloud hosted, native JavaScript variables and constants",
   "main": "lib/v.js",
   "scripts": {
-    "test": "standard && tape test/*.js | tap-spec"
+    "test": "standard && bogota test/*.js"
   },
   "keywords": [
     "var",
