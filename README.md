@@ -9,6 +9,8 @@ V keeps your variables online and in sync!
 - Keeps your variables on the cloud
 - Automatic variables rehidration
 
+#### Requires NodeJS 6+, deasync, optional to use uws
+
 ### TODO:
 - Sync instances
 - Web GUI
