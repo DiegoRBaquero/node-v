@@ -67,7 +67,6 @@ class V {
       try {
         message = JSON.parse(message)
       } catch (e) {}
-      // console.log(message)
       if (typeof message === 'string') {
         self.debug('SMessage: %s', message)
         switch (message) {
@@ -101,6 +100,7 @@ class V {
             init()
             break
           case 'id':
+            self.debug('Use %s as your UUID', message.data)
             console.log(`Use ${message.data} as your UUID`)
             initWithId(message.data)
             break
@@ -163,7 +163,10 @@ class V {
 
   close () {
     this.debug('close')
+    this.debug('Remember to set your UUID to %s', this._uuid)
+    console.log(`Remember to set your UUID to ${this._uuid}`)
     if (this._socket) {
+      this._socket.destroy()
       this._socket.destroy()
       this._closed = true
     }
@@ -173,11 +176,10 @@ class V {
     this.debug('destroy')
     this._socket.send(stringify({ type: 'destroy' }))
     this.close()
-    this._destroyed = true
   }
 
   const (key, val) {
-    _debug('V')('%s %o', key, val)
+    _debug('V:const')('%s %o', key, val)
     Object.defineProperty(this, key, { value: val, enumerable: true })
     this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
   }
