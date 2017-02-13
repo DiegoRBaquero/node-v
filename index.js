@@ -10,11 +10,11 @@ let instanceCounter = 1
 let consCounter = 1
 
 class V {
-  constructor (uuid, cb) {
+  constructor (uuid = '', cb) {
     const self = this
     if (typeof uuid === 'function') {
       cb = uuid
-      uuid = false
+      uuid = ''
     }
     Object.defineProperty(self, 'debug', {
       value: _debug('V:constructor-' + consCounter++),
