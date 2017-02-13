@@ -35,7 +35,7 @@ class V extends EventEmitter {
         self.debug('set %s', key)
         try {
           obj[key] = val
-          if (!self._closed) self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
+          if (!self._closed && !key.startsWith('_')) self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
           return true
         } catch (e) {
           self.debug('Failed to set readonly property')
@@ -111,7 +111,7 @@ class V extends EventEmitter {
             self.debug('sync set %s', setKey)
             try {
               self[setKey] = message.data
-              self.emit('update')
+              self.emit('set', { key: message.key, value: message.data })
             } catch (e) {
               self.debug('Failed to sync set')
             }
@@ -120,9 +120,11 @@ class V extends EventEmitter {
             const deleteKey = message.key
             self.debug('sync delete %s', deleteKey)
             delete self[deleteKey]
+            self.emit('delete', message.key)
             break
           case 'destroy':
             self.close()
+            self.emit('destroy')
             break
           default:
             onError('Message type not handled')
@@ -188,6 +190,10 @@ class V extends EventEmitter {
     _debug('V:const')('%s %o', key, val)
     Object.defineProperty(this, key, { value: val, enumerable: true })
     this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
+  }
+
+  keys () {
+    return Object.keys(this).filter(key => !key.startsWith('_') && key !== 'domain')
   }
 }
 
