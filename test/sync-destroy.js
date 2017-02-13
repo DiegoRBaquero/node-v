@@ -1,9 +1,6 @@
 const test = require('tape')
 
 const V = require('../index')
-const common = require('./common')
-
-const TIMEOUT = common.TIMEOUT
 
 test('Sync - Destroy', t => {
   t.plan(5)
@@ -20,7 +17,7 @@ test('Sync - Destroy', t => {
   t.equals(v2.a, 10, 'Value is the same after rehidration')
 
   v.destroy()
-  setTimeout(() => {
+  v2.on('destroy', () => {
     t.true(v2._closed, 'Destroy instanceCounter propagated correctly')
-  }, TIMEOUT)
+  })
 })

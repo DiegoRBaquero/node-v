@@ -1,9 +1,6 @@
 const test = require('tape')
 
 const V = require('../index')
-const common = require('./common')
-
-const TIMEOUT = common.TIMEOUT
 
 test('Sync - Set', t => {
   t.plan(5)
@@ -20,9 +17,10 @@ test('Sync - Set', t => {
   t.equals(v2.a, 10, 'Value is the same after rehidration')
 
   v.a = 20
-  setTimeout(() => {
+  v2.on('set', update => {
+    console.log(update)
     t.equals(v2.a, 20, 'Set value propagated correctly')
     v2.close()
     v.destroy()
-  }, TIMEOUT)
+  })
 })
