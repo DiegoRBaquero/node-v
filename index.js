@@ -1,80 +1,100 @@
-const debug = require('debug')('V')
-const WebSocket = require('ws')
+const _debug = require('debug')
+const _WebSocket = require('simple-websocket')
+
+let deasync
+try {
+  deasync = require('deasync')
+} catch (e) {}
+
+let instanceCounter = 1
+let consCounter = 1
 
 class V {
-  constructor (uuid) {
-    debug('constructor')
+  constructor (uuid, cb) {
     const self = this
-    let proxy, deasync
-
-    try {
-      deasync = require('deasync')
-    } catch (e) {
-      throw new Error('Can\'t load deasync module. Please use V.init with promise or cb')
+    if (typeof uuid === 'function') {
+      cb = uuid
+      uuid = false
     }
+    Object.defineProperty(self, 'debug', {
+      value: _debug('V:constructor-' + consCounter++),
+      writable: true
+    })
+    self.debug('constructor %s', uuid)
+    if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(uuid, v => { ...your code })` ')
 
     const handler = {
       get (obj, key) {
-        if (!key.startsWith('_')) debug('get %s', key)
+        if (!key.startsWith('_')) self.debug('get %s', key)
         if (key in obj) return obj[key]
         return undefined
       },
       set (obj, key, val) {
-        debug('set %s', key)
+        self.debug('set %s', key)
         try {
           obj[key] = val
           if (!self._closed) self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
           return true
         } catch (e) {
-          debug('Failed to set readonly property')
+          self.debug('Failed to set readonly property')
           return false
         }
       },
       deleteProperty (obj, key) {
-        debug('deleteProperty %s', key)
+        self.debug('deleteProperty %s', key)
         delete obj[key]
         if (!self._closed) self._socket.send(JSON.stringify({ type: 'delete', key: key }))
         return true
       }
     }
 
+    let proxy
+
     function initWithId (id) {
-      debug('Init with id: %s', id)
+      self.debug('Init with id: %s', id)
       Object.defineProperty(self, '_uuid', { value: id })
       init()
     }
     function init () {
-      debug('Init')
+      Object.defineProperty(self, 'debug', {
+        value: _debug('v' + instanceCounter++ + ':' + self._uuid)
+      })
+      self.debug('Init')
       proxy = new Proxy(self, handler)
+      if (cb) cb(proxy)
     }
     function onMessage (message) {
       try {
         message = JSON.parse(message)
       } catch (e) {}
+      // console.log(message)
       if (typeof message === 'string') {
-        debug('Message: %s', message)
+        self.debug('SMessage: %s', message)
         switch (message) {
           case 'start':
             init()
+            break
+          case 'NON_EXISTEN_ID':
+            onError('Please create a new V')
             break
           default:
             onError('Message not hanlded')
         }
       } else {
-        debug('Message: %o', message)
+        self.debug('OMessage: %o', message)
         switch (message.type) {
           case 'start':
             const data = message.data
             const vars = data.vars
-            debug('vars: %O', vars)
+            self.debug('vars: %O', vars)
             for (const key in vars) {
               const varOrConst = vars[key]
-              debug(typeof varOrConst)
+              self.debug(typeof varOrConst)
               if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
-                debug('Rehidrating constant')
+                self.debug('Rehidrating constant')
                 Object.defineProperty(self, key, { value: vars[key].val, enumerable: true })
               } else {
-                debug('Rehidrating variable')
+                self.debug('Rehidrating variable')
                 self[key] = vars[key]
               }
             }
@@ -86,16 +106,16 @@ class V {
             break
           case 'set':
             const setKey = message.key
-            debug('sync set %s', setKey)
+            self.debug('sync set %s', setKey)
             try {
               self[setKey] = message.data
             } catch (e) {
-              debug('Failed to sync set')
+              self.debug('Failed to sync set')
             }
             break
           case 'delete':
             const deleteKey = message.key
-            debug('sync delete %s', deleteKey)
+            self.debug('sync delete %s', deleteKey)
             delete self[deleteKey]
             break
           case 'destroy':
@@ -107,25 +127,26 @@ class V {
       }
     }
     function onClose (reason) {
-      debug('Socket closed %s', reason)
+      self.debug('Socket closed %s', reason)
     }
     function onError (err = 'Error') {
+      self.debug('Socket error %s', err)
       self.close()
-      throw new Error(err)
+      throw err
     }
 
-    const socket = new WebSocket('wss://api.vars.online')
+    const socket = new _WebSocket('wss://api.vars.online')
 
     Object.defineProperty(this, '_socket', { value: socket })
 
-    socket.on('message', onMessage)
+    socket.on('data', onMessage)
     socket.on('close', onClose)
     socket.on('error', onError)
-    socket.on('open', () => {
-      debug('Socket opened')
+    socket.on('connect', () => {
+      self.debug('Socket opened')
 
       if (!uuid) {
-        debug('Requesting UUID...')
+        self.debug('Requesting UUID...')
         socket.send('requestId')
       } else {
         Object.defineProperty(self, '_uuid', { value: uuid })
@@ -133,27 +154,30 @@ class V {
       }
     })
 
-    deasync.loopWhile(() => proxy === undefined)
-
-    debug('Returning')
-
-    return proxy
+    if (deasync && deasync.loopWhile) {
+      self.debug('%d %o', instanceCounter, deasync)
+      deasync.loopWhile(() => proxy === undefined)
+      return proxy
+    }
   }
 
   close () {
+    this.debug('close')
     if (this._socket) {
-      this._socket.close()
+      this._socket.destroy()
       this._closed = true
     }
   }
 
   destroy () {
+    this.debug('destroy')
     this._socket.send(stringify({ type: 'destroy' }))
     this.close()
     this._destroyed = true
   }
 
   const (key, val) {
+    _debug('V')('%s %o', key, val)
     Object.defineProperty(this, key, { value: val, enumerable: true })
     this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
   }
@@ -163,4 +187,7 @@ function stringify (data) {
   return JSON.stringify(data)
 }
 
-module.exports = V
+module.exports = function _V (...args) {
+  if (!(this instanceof V)) return new V(...args)
+  return V
+}
