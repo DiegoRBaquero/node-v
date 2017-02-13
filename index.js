@@ -1,3 +1,4 @@
+const EventEmitter = require('events').EventEmitter
 const _debug = require('debug')
 const _WebSocket = require('simple-websocket')
 
@@ -9,8 +10,9 @@ try {
 let instanceCounter = 1
 let consCounter = 1
 
-class V {
+class V extends EventEmitter {
   constructor (uuid = '', cb) {
+    super()
     const self = this
     if (typeof uuid === 'function') {
       cb = uuid
@@ -109,6 +111,7 @@ class V {
             self.debug('sync set %s', setKey)
             try {
               self[setKey] = message.data
+              self.emit('update')
             } catch (e) {
               self.debug('Failed to sync set')
             }
@@ -147,6 +150,7 @@ class V {
 
       if (!uuid) {
         self.debug('Requesting UUID...')
+        self._requestedUUID = true
         socket.send('requestId')
       } else {
         Object.defineProperty(self, '_uuid', { value: uuid })
@@ -163,8 +167,10 @@ class V {
 
   close () {
     this.debug('close')
-    this.debug('Remember to set your UUID to %s', this._uuid)
-    console.log(`Remember to set your UUID to ${this._uuid}`)
+    if (this._requestedUUID) {
+      this.debug('Remember to set your UUID to %s', this._uuid)
+      console.log(`Remember to set your UUID to ${this._uuid}`)
+    }
     if (this._socket) {
       this._socket.destroy()
       this._socket.destroy()
