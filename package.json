@@ -42,5 +42,8 @@
   "scripts": {
     "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
     "test": "standard && bogota test/*.js"
+  },
+  "browser": {
+    "deasync": false
   }
 }
