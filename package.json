@@ -5,8 +5,8 @@
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
     "debug": "^2.6.0",
-    "uuid": "^2.0.3",
-    "ws": "^1.1.1"
+    "simple-websocket": "^4.3.0",
+    "uuid": "^2.0.3"
   },
   "devDependencies": {
     "babili": "0.0.11",
