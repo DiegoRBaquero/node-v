@@ -12,6 +12,7 @@
     "babili": "0.0.11",
     "bogota": "^1.0.3",
     "glob": "^7.1.1",
+    "istanbul": "^0.4.5",
     "standard": "^8.6.0",
     "tape": "^4.6.3"
   },
@@ -42,7 +43,8 @@
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > web/v.js",
     "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
-    "test": "standard && bogota test/*.js"
+    "test": "standard && bogota test/*.js",
+    "test-travis": "standard && istanbul cover tape --report lcovonly -- test/*.js"
   },
   "browser": {
     "deasync": false
