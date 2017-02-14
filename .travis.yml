@@ -3,7 +3,7 @@ sudo: false
 node_js:
   - "node"
   - "6"
-script: test-travis
+script: "npm run test-travis"
 notifications:
   email:
     on_success: never # default: change
