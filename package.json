@@ -13,7 +13,7 @@
     "bogota": "^1.0.3",
     "codecov": "^1.0.1",
     "glob": "^7.1.1",
-    "istanbul": "^0.4.5",
+    "nyc": "^10.1.2",
     "standard": "^8.6.0",
     "tape": "^4.6.3"
   },
@@ -44,8 +44,8 @@
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > web/v.js",
     "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
-    "test": "standard && bogota test/*.js",
-    "test-travis": "standard && istanbul cover tape --report lcovonly -- test/*.js && codecov"
+    "test": "standard && nyc bogota test/*.js",
+    "test-travis": "standard && nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "browser": {
     "deasync": false
