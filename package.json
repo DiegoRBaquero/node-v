@@ -4,15 +4,13 @@
   "version": "0.1.4",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
-    "debug": "^2.6.0",
-    "simple-websocket": "^4.3.0",
-    "uuid": "^2.0.3"
+    "debug": "^2.6.1",
+    "simple-websocket": "^4.3.1"
   },
   "devDependencies": {
     "babili": "0.0.11",
     "bogota": "^1.0.3",
     "codecov": "^1.0.1",
-    "glob": "^7.1.1",
     "nyc": "^10.1.2",
     "standard": "^8.6.0",
     "tape": "^4.6.3"
@@ -44,8 +42,9 @@
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > web/v.js",
     "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
-    "test": "standard && nyc bogota test/*.js",
-    "test-travis": "standard && nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "pretest": "standard",
+    "test": "nyc bogota test/*.js",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "browser": {
     "deasync": false
