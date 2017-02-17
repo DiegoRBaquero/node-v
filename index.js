@@ -89,7 +89,7 @@ class V extends EventEmitter {
       })
       self.debug('Init')
       proxy = new Proxy(self, handler())
-      if (cb) cb(proxy)
+      if (cb) return cb(proxy)
     }
     function onMessage (message) {
       try {
