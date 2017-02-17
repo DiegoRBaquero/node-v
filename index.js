@@ -153,8 +153,7 @@ class V extends EventEmitter {
           const errorMessage = message.data
           self._debug('Error: %s', errorMessage)
           self.close()
-          self.emit('error', errorMessage)
-          break
+          throw new Error(errorMessage)
         }
         default: {
           self._debug('Received unknown message type')
@@ -239,16 +238,14 @@ function stringify (data) {
 }
 
 module.exports = function _V (roomId = '', cb) {
-  if (!deasync || !deasync.loopWhile) {
-    // If only callback is passed, fix params
-    if (typeof roomId === 'function') {
-      cb = roomId
-      roomId = ''
-    }
-    if (cb) return new V(roomId, cb)
-    return new Promise((resolve, reject) => {
-      return new V(roomId, resolve)
-    })
+  // If only callback is passed, fix params
+  if (typeof roomId === 'function') {
+    cb = roomId
+    roomId = ''
   }
-  return new V(roomId, cb)
+  if (cb || !deasync || !deasync.loopWhile) {
+    if (typeof cb === 'function') return new V(roomId, cb)
+    return new Promise(resolve => new V(roomId, resolve))
+  }
+  return new V(roomId)
 }
