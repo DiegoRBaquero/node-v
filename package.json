@@ -5,7 +5,7 @@
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
     "debug": "^2.6.1",
-    "simple-websocket": "^4.3.1"
+    "simple-websocket": "^5.0.0"
   },
   "devDependencies": {
     "babili": "0.0.11",
