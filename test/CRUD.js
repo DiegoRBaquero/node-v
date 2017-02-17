@@ -5,17 +5,17 @@ const V = require('../index')
 test('CRUD - String & Number', t => {
   t.plan(32)
 
-  let v = new V() // Init with new ID
-  t.pass('Construct with no ID worked')
-  let uuid = v._uuid
+  let v = new V() // Init with new roomId
+  t.pass('Construct with no roomId worked')
+  let uuid = v._roomId
 
   t.equal(v.keys().length, 0, 'Empty keys')
   v.close()
 
   v = new V(uuid)
-  t.pass('Construct with same ID worked')
+  t.pass('Construct with same roomId worked')
 
-  t.equal(v._uuid, uuid, 'ID is the same')
+  t.equal(v._roomId, uuid, 'roomId is the same')
 
   v.a = 'a'
   t.equal(v.keys().length, 1, 'Keys length of 1')
