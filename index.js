@@ -1,52 +1,78 @@
 const EventEmitter = require('events').EventEmitter
 const _debug = require('debug')
 const _WebSocket = require('simple-websocket')
-
 let deasync
 try {
   deasync = require('deasync')
-} catch (e) {}
+} catch (e) {
+  _debug('V')('Couldn\'t load deasync')
+}
 
 let instanceCounter = 1
 let consCounter = 1
 
 class V extends EventEmitter {
-  constructor (uuid = '', cb) {
+  constructor (uuid, cb) {
     super()
+
     const self = this
-    if (typeof uuid === 'function') {
-      cb = uuid
-      uuid = ''
-    }
+
+    // Hide EventEmitter properties from enumeration
+    Object.defineProperty(self, '_events', { value: self._events, enumerable: false })
+    Object.defineProperty(self, '_maxListeners', { value: self._events, enumerable: false })
+
+    // Define numerated contructor debug object
     Object.defineProperty(self, 'debug', {
       value: _debug('V:constructor-' + consCounter++),
       writable: true
     })
-    self.debug('constructor %s', uuid)
-    if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(uuid, v => { ...your code })` ')
 
-    const handler = {
-      get (obj, key) {
-        if (!key.startsWith('_')) self.debug('get %s', key)
-        if (key in obj) return obj[key]
-        return undefined
-      },
-      set (obj, key, val) {
-        self.debug('set %s', key)
-        try {
-          obj[key] = val
-          if (!self._closed && !key.startsWith('_')) self._socket.send(JSON.stringify({ type: 'set', key: key, data: val }))
+    self.debug('constructor %s', uuid)
+
+    // if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(uuid, v => { ...your code })` ')
+
+    // Proxy handler with object tree
+    const handler = (tree = []) => {
+      // self.debug('new handler %o', tree)
+      return {
+        get (obj, key) {
+          const treeKey = tree.concat([key]).join('.')
+          self.debug('get %s', treeKey)
+          if (key in obj) {
+            if (!key.startsWith('_') && typeof obj[key] === 'object') {
+              const newTree = tree.slice()
+              newTree.push(key)
+              return new Proxy(obj[key], handler(newTree))
+            }
+            return obj[key]
+          }
+          return undefined
+        },
+        set (obj, key, val) {
+          const treeKey = tree.concat([key]).join('.')
+          self.debug('set %s=%o', treeKey, val)
+          try {
+            obj[key] = val
+            if (!self._closed && !key.startsWith('_')) {
+              self._socket.send(JSON.stringify({
+                type: 'set',
+                key: treeKey,
+                data: val
+              }))
+            }
+            return true
+          } catch (e) {
+            self.debug('Failed to set readonly property')
+            return false
+          }
+        },
+        deleteProperty (obj, key) {
+          const treeKey = tree.concat([key]).join('.')
+          self.debug('deleteProperty %s', treeKey)
+          delete obj[key]
+          if (!self._closed) self._socket.send(JSON.stringify({ type: 'delete', key: treeKey }))
           return true
-        } catch (e) {
-          self.debug('Failed to set readonly property')
-          return false
         }
-      },
-      deleteProperty (obj, key) {
-        self.debug('deleteProperty %s', key)
-        delete obj[key]
-        if (!self._closed) self._socket.send(JSON.stringify({ type: 'delete', key: key }))
-        return true
       }
     }
 
@@ -62,7 +88,7 @@ class V extends EventEmitter {
         value: _debug('v' + instanceCounter++ + ':' + self._uuid)
       })
       self.debug('Init')
-      proxy = new Proxy(self, handler)
+      proxy = new Proxy(self, handler())
       if (cb) cb(proxy)
     }
     function onMessage (message) {
@@ -90,12 +116,12 @@ class V extends EventEmitter {
             self.debug('vars: %O', vars)
             for (const key in vars) {
               const varOrConst = vars[key]
-              self.debug(typeof varOrConst)
+              // self.debug(typeof varOrConst)
               if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
-                self.debug('Rehidrating constant')
+                // self.debug('Rehidrating constant')
                 Object.defineProperty(self, key, { value: vars[key].val, enumerable: true })
               } else {
-                self.debug('Rehidrating variable')
+                // self.debug('Rehidrating variable')
                 self[key] = vars[key]
               }
             }
@@ -175,7 +201,6 @@ class V extends EventEmitter {
     }
     if (this._socket) {
       this._socket.destroy()
-      this._socket.destroy()
       this._closed = true
     }
   }
@@ -201,7 +226,17 @@ function stringify (data) {
   return JSON.stringify(data)
 }
 
-module.exports = function _V (...args) {
-  if (!(this instanceof V)) return new V(...args)
-  return V
+module.exports = function _V (uuid = '', cb) {
+  if (!deasync || !deasync.loopWhile) {
+    // If only callback is passed, fix params
+    if (typeof uuid === 'function') {
+      cb = uuid
+      uuid = ''
+    }
+    if (cb) return new V(uuid, cb)
+    return new Promise((resolve, reject) => {
+      return new V(uuid, resolve)
+    })
+  }
+  return new V(uuid, cb)
 }
