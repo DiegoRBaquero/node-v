@@ -43,7 +43,7 @@
     "browserify": "browserify -s V -e ./index.js | babili > web/v.js",
     "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
     "pretest": "standard",
-    "test": "nyc bogota test/*.js",
+    "test": "nyc bogota",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "browser": {
