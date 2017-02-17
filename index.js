@@ -29,10 +29,35 @@ class V extends EventEmitter {
 
     self._debug('constructor %s', roomId)
 
-    // if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(roomId, v => { ...your code })` ')
+    let proxy
+
+    const ws = new _WebSocket('wss://api.vars.online')
+
+    Object.defineProperty(this, '_socket', { value: ws })
+
+    ws.on('data', onMessage)
+    ws.on('close', onClose)
+    ws.on('error', onError)
+    ws.on('connect', () => {
+      self._debug('Socket opened')
+
+      if (!roomId) {
+        self._debug('Requesting new roomId...')
+        self._requestedRoomId = true
+        send({ type: 'requestRoomId' })
+      } else {
+        Object.defineProperty(self, '_roomId', { value: roomId })
+        send({ type: 'startWithId', data: roomId })
+      }
+    })
+
+    if (deasync && deasync.loopWhile) {
+      deasync.loopWhile(() => proxy === undefined)
+      return proxy
+    }
 
     // Proxy handler with object tree
-    const handler = (tree = []) => {
+    function handler (tree = []) {
       // self._debug('new handler %o', tree)
       return {
         get (obj, key) {
@@ -82,9 +107,10 @@ class V extends EventEmitter {
         }
       }
     }
-
-    let proxy
-
+    function send (data, sendingWs = ws) {
+      self._debug('Sending %o', data)
+      sendingWs.send(JSON.stringify(data))
+    }
     function initWithId (id) {
       self._debug('Init with id: %s', id)
       Object.defineProperty(self, '_roomId', { value: id })
@@ -167,36 +193,6 @@ class V extends EventEmitter {
       self._debug('Socket error %s', err)
       self.close()
       throw err
-    }
-
-    const ws = new _WebSocket('wss://api.vars.online')
-
-    Object.defineProperty(this, '_socket', { value: ws })
-
-    ws.on('data', onMessage)
-    ws.on('close', onClose)
-    ws.on('error', onError)
-    ws.on('connect', () => {
-      self._debug('Socket opened')
-
-      if (!roomId) {
-        self._debug('Requesting new roomId...')
-        self._requestedRoomId = true
-        send({ type: 'requestRoomId' })
-      } else {
-        Object.defineProperty(self, '_roomId', { value: roomId })
-        send({ type: 'startWithId', data: roomId })
-      }
-    })
-
-    function send (data, sendingWs = ws) {
-      self._debug('Sending %o', data)
-      sendingWs.send(JSON.stringify(data))
-    }
-
-    if (deasync && deasync.loopWhile) {
-      deasync.loopWhile(() => proxy === undefined)
-      return proxy
     }
   }
 
