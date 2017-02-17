@@ -55,14 +55,13 @@ class V extends EventEmitter {
             if (obj[key] === val) return true
             obj[key] = val
             if (!self._closed && !key.startsWith('_')) {
-              setTimeout(() => { // Don't wait to return true
-                send({
-                  type: 'set',
-                  key: treeKey,
-                  data: val
-                })
+              send({
+                type: 'set',
+                key: treeKey,
+                data: val
               })
             }
+            self._debug('return true')
             return true
           } catch (e) {
             self._debug('Failed to set readonly property %o', e)
@@ -74,11 +73,9 @@ class V extends EventEmitter {
           self._debug('deleteProperty %s', treeKey)
           delete obj[key]
           if (!self._closed) {
-            setTimeout(() => { // Don't wait to return true
-              send({
-                type: 'delete',
-                key: treeKey
-              })
+            send({
+              type: 'delete',
+              key: treeKey
             })
           }
           return true
@@ -211,7 +208,11 @@ class V extends EventEmitter {
       console.log(`Remember to set your roomId to ${this._roomId}`)
     }
     if (this._socket) {
-      this._socket.destroy()
+      process.nextTick(() => {
+        process.nextTick(() => {
+          this._socket.destroy()
+        })
+      })
       this._closed = true
     }
   }
