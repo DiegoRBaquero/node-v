@@ -12,32 +12,32 @@ let instanceCounter = 1
 let consCounter = 1
 
 class V extends EventEmitter {
-  constructor (uuid, cb) {
+  constructor (roomId, cb) {
     super()
 
     const self = this
 
     // Hide EventEmitter properties from enumeration
-    Object.defineProperty(self, '_events', { value: self._events, enumerable: false })
-    Object.defineProperty(self, '_maxListeners', { value: self._events, enumerable: false })
+    Object.defineProperty(self, '_events', { value: self._events, enumerable: false, configurable: false, writable: false })
+    Object.defineProperty(self, '_maxListeners', { value: self._events, enumerable: false, configurable: false, writable: false })
 
     // Define numerated contructor debug object
-    Object.defineProperty(self, 'debug', {
+    Object.defineProperty(self, '_debug', {
       value: _debug('V:constructor-' + consCounter++),
       writable: true
     })
 
-    self.debug('constructor %s', uuid)
+    self._debug('constructor %s', roomId)
 
-    // if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(uuid, v => { ...your code })` ')
+    // if (!deasync && cb === undefined) throw new Error('Can\'t load deasync module. Please use v with a cb: `V(roomId, v => { ...your code })` ')
 
     // Proxy handler with object tree
     const handler = (tree = []) => {
-      // self.debug('new handler %o', tree)
+      // self._debug('new handler %o', tree)
       return {
         get (obj, key) {
           const treeKey = tree.concat([key]).join('.')
-          self.debug('get %s', treeKey)
+          if (!key.startsWith('_')) self._debug('get %s', treeKey)
           if (key in obj) {
             if (!key.startsWith('_') && typeof obj[key] === 'object') {
               const newTree = tree.slice()
@@ -50,27 +50,37 @@ class V extends EventEmitter {
         },
         set (obj, key, val) {
           const treeKey = tree.concat([key]).join('.')
-          self.debug('set %s=%o', treeKey, val)
+          self._debug('set %s=%o', treeKey, val)
           try {
+            if (obj[key] === val) return true
             obj[key] = val
             if (!self._closed && !key.startsWith('_')) {
-              self._socket.send(JSON.stringify({
-                type: 'set',
-                key: treeKey,
-                data: val
-              }))
+              setTimeout(() => { // Don't wait to return true
+                send({
+                  type: 'set',
+                  key: treeKey,
+                  data: val
+                })
+              })
             }
             return true
           } catch (e) {
-            self.debug('Failed to set readonly property')
+            self._debug('Failed to set readonly property %o', e)
             return false
           }
         },
         deleteProperty (obj, key) {
           const treeKey = tree.concat([key]).join('.')
-          self.debug('deleteProperty %s', treeKey)
+          self._debug('deleteProperty %s', treeKey)
           delete obj[key]
-          if (!self._closed) self._socket.send(JSON.stringify({ type: 'delete', key: treeKey }))
+          if (!self._closed) {
+            setTimeout(() => { // Don't wait to return true
+              send({
+                type: 'delete',
+                key: treeKey
+              })
+            })
+          }
           return true
         }
       }
@@ -79,125 +89,126 @@ class V extends EventEmitter {
     let proxy
 
     function initWithId (id) {
-      self.debug('Init with id: %s', id)
-      Object.defineProperty(self, '_uuid', { value: id })
+      self._debug('Init with id: %s', id)
+      Object.defineProperty(self, '_roomId', { value: id })
       init()
     }
     function init () {
-      Object.defineProperty(self, 'debug', {
-        value: _debug('v' + instanceCounter++ + ':' + self._uuid)
+      Object.defineProperty(self, '_debug', {
+        value: _debug('v' + instanceCounter++ + ':' + self._roomId)
       })
-      self.debug('Init')
       proxy = new Proxy(self, handler())
+      self._debug('Ready')
       if (cb) return cb(proxy)
     }
     function onMessage (message) {
-      try {
-        message = JSON.parse(message)
-      } catch (e) {}
-      if (typeof message === 'string') {
-        self.debug('SMessage: %s', message)
-        switch (message) {
-          case 'start':
-            init()
-            break
-          case 'NON_EXISTEN_ID':
-            onError('Please create a new V')
-            break
-          default:
-            onError('Message not hanlded')
+      message = JSON.parse(message)
+      self._debug('Received %o', message)
+      switch (message.type) {
+        case 'roomId': {
+          self._debug('Use %s as your roomId', message.data)
+          console.log(`Use ${message.data} as your roomId`)
+          initWithId(message.data)
+          break
         }
-      } else {
-        self.debug('OMessage: %o', message)
-        switch (message.type) {
-          case 'start':
-            const data = message.data
-            const vars = data.vars
-            self.debug('vars: %O', vars)
-            for (const key in vars) {
-              const varOrConst = vars[key]
-              // self.debug(typeof varOrConst)
-              if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
-                // self.debug('Rehidrating constant')
-                Object.defineProperty(self, key, { value: vars[key].val, enumerable: true })
-              } else {
-                // self.debug('Rehidrating variable')
-                self[key] = vars[key]
-              }
+        case 'start': {
+          const data = message.data
+          const vars = data.vars
+          self._debug('vars: %O', vars)
+          for (const key in vars) {
+            const varOrConst = vars[ key ]
+            // self._debug(typeof varOrConst)
+            if (varOrConst && typeof varOrConst === 'object' && varOrConst.isConst) {
+              // self._debug('Rehidrating constant')
+              Object.defineProperty(self, key, { value: vars[ key ].val, enumerable: true })
+            } else {
+              // self._debug('Rehidrating variable')
+              self[ key ] = vars[ key ]
             }
-            init()
-            break
-          case 'id':
-            self.debug('Use %s as your UUID', message.data)
-            console.log(`Use ${message.data} as your UUID`)
-            initWithId(message.data)
-            break
-          case 'set':
-            const setKey = message.key
-            self.debug('sync set %s', setKey)
-            try {
-              self[setKey] = message.data
-              self.emit('set', { key: message.key, value: message.data })
-            } catch (e) {
-              self.debug('Failed to sync set')
-            }
-            break
-          case 'delete':
-            const deleteKey = message.key
-            self.debug('sync delete %s', deleteKey)
-            delete self[deleteKey]
-            self.emit('delete', message.key)
-            break
-          case 'destroy':
-            self.close()
-            self.emit('destroy')
-            break
-          default:
-            onError('Message type not handled')
+          }
+          init()
+          break
+        }
+        case 'set': {
+          const setKey = message.key
+          self._debug('sync set %s', setKey)
+          try {
+            self[ setKey ] = message.data
+            self.emit('set', { key: message.key, value: message.data })
+          } catch (e) {
+            self._debug('Failed to sync set')
+          }
+          break
+        }
+        case 'delete': {
+          const deleteKey = message.key
+          self._debug('sync delete %s', deleteKey)
+          delete self[ deleteKey ]
+          self.emit('delete', message.key)
+          break
+        }
+        case 'destroy': {
+          self.close()
+          self.emit('destroy')
+          break
+        }
+        case 'error': {
+          const errorMessage = message.data
+          self._debug('Error: %s', errorMessage)
+          self.close()
+          self.emit('error', errorMessage)
+          break
+        }
+        default: {
+          self._debug('Received unknown message type')
         }
       }
     }
     function onClose (reason) {
-      self.debug('Socket closed %s', reason)
+      self._debug('Socket closed %s', reason)
     }
     function onError (err = 'Error') {
-      self.debug('Socket error %s', err)
+      self._debug('Socket error %s', err)
       self.close()
       throw err
     }
 
-    const socket = new _WebSocket('wss://api.vars.online')
+    const ws = new _WebSocket('wss://api.vars.online')
 
-    Object.defineProperty(this, '_socket', { value: socket })
+    Object.defineProperty(this, '_socket', { value: ws })
 
-    socket.on('data', onMessage)
-    socket.on('close', onClose)
-    socket.on('error', onError)
-    socket.on('connect', () => {
-      self.debug('Socket opened')
+    ws.on('data', onMessage)
+    ws.on('close', onClose)
+    ws.on('error', onError)
+    ws.on('connect', () => {
+      self._debug('Socket opened')
 
-      if (!uuid) {
-        self.debug('Requesting UUID...')
-        self._requestedUUID = true
-        socket.send('requestId')
+      if (!roomId) {
+        self._debug('Requesting new roomId...')
+        self._requestedRoomId = true
+        send({ type: 'requestRoomId' })
       } else {
-        Object.defineProperty(self, '_uuid', { value: uuid })
-        socket.send(stringify({ type: 'startWithId', data: uuid }))
+        Object.defineProperty(self, '_roomId', { value: roomId })
+        send({ type: 'startWithId', data: roomId })
       }
     })
 
+    function send (data, sendingWs = ws) {
+      self._debug('Sending %o', data)
+      sendingWs.send(JSON.stringify(data))
+    }
+
     if (deasync && deasync.loopWhile) {
-      self.debug('%d %o', instanceCounter, deasync)
       deasync.loopWhile(() => proxy === undefined)
       return proxy
     }
   }
 
   close () {
-    this.debug('close')
-    if (this._requestedUUID) {
-      this.debug('Remember to set your UUID to %s', this._uuid)
-      console.log(`Remember to set your UUID to ${this._uuid}`)
+    this._debug('close')
+    if (this._requestedRoomId) {
+      this._debug('Remember to set your roomId to %s', this._roomId)
+      console.log(`Remember to set your roomId to ${this._roomId}`)
     }
     if (this._socket) {
       this._socket.destroy()
@@ -206,7 +217,7 @@ class V extends EventEmitter {
   }
 
   destroy () {
-    this.debug('destroy')
+    this._debug('destroy')
     this._socket.send(stringify({ type: 'destroy' }))
     this.close()
   }
@@ -226,17 +237,17 @@ function stringify (data) {
   return JSON.stringify(data)
 }
 
-module.exports = function _V (uuid = '', cb) {
+module.exports = function _V (roomId = '', cb) {
   if (!deasync || !deasync.loopWhile) {
     // If only callback is passed, fix params
-    if (typeof uuid === 'function') {
-      cb = uuid
-      uuid = ''
+    if (typeof roomId === 'function') {
+      cb = roomId
+      roomId = ''
     }
-    if (cb) return new V(uuid, cb)
+    if (cb) return new V(roomId, cb)
     return new Promise((resolve, reject) => {
-      return new V(uuid, resolve)
+      return new V(roomId, resolve)
     })
   }
-  return new V(uuid, cb)
+  return new V(roomId, cb)
 }
