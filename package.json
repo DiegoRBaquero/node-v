@@ -1,6 +1,6 @@
 {
   "name": "v",
-  "description": "Secure, Synchronized, Realtime, Cloud, Native JavaScript Variables and Events",
+  "description": "Secure, Synchronized, Realtime, Cloud, Native JavaScript Variables & Events",
   "version": "0.2.0",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
