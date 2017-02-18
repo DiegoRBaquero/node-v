@@ -171,8 +171,8 @@ class V extends EventEmitter {
           break
         }
         case 'destroy': {
-          self.close()
-          self.emit('destroy')
+          self.close(true)
+          self.emit('destroyed')
           break
         }
         case 'error': {
@@ -198,25 +198,21 @@ class V extends EventEmitter {
     }
   }
 
-  close () {
+  close (destroying = false) {
     this._debug('close')
-    if (this._requestedRoomId) {
+    if (!destroying && this._requestedRoomId) {
       this._debug('Remember to set your roomId to %s', this._roomId)
       console.log(`Remember to set your roomId to ${this._roomId}`)
     }
     if (this._socket) {
-      process.nextTick(() => {
-        process.nextTick(() => {
-          this._socket.destroy()
-        })
-      })
+      this._socket.destroy()
     }
   }
 
   destroy () {
     this._debug('destroy')
     this._socket.send(stringify({ type: 'destroy' }))
-    this.close()
+    this.close(true)
   }
 
   const (key, val) {
