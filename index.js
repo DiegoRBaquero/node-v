@@ -61,6 +61,7 @@ class V extends EventEmitter {
       // self._debug('new handler %o', tree)
       return {
         get (obj, key) {
+          if (typeof key === 'symbol') return obj[key]
           const treeKey = tree.concat([key]).join('.')
           if (!key.startsWith('_')) self._debug('get %s', treeKey)
           if (key in obj) {
