@@ -8,20 +8,20 @@ V extends your in-memory variables to also be saved/persisted instantly. Variabl
 between all your running instances of V. When you restart V, variables and constants are reloaded automatically.
 
 ### Current Features
-- Keeps your variables on the cloud
+- Keeps your variables in the cloud
 - Syncs variables between instances
 - Automatic variables rehidration (reloading)
 
-#### Requires NodeJS 6+, deasync
+#### Requires ES6 Proxy (NodeJS 6+ and new browsers)
 
 ### TODO:
 - Web GUI
 - History - Time machine
 - Events pub/sub
 
-## Examples:
+## NodeJS Examples:
 
-First: Get a new ID (Web GUI soon), this will print your ID on the console
+First: Get a new roomId (Web GUI soon), this will print your roomId on the console
 ```js
 const V = require('v')
 const v = new v()
@@ -30,7 +30,7 @@ const v = new v()
 Then use it:
 ```js
 const V = require('v')
-const v = new v('the-id-from-the-console')
+const v = new v('the-roomId-from-the-console')
 
 v.myVar = 5
 v.const('constant', 10)
