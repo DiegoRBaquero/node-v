@@ -19,3 +19,6 @@ _ignore/
 comparison/
 lib/
 web/
+*.tgz
+package/
+examples/woot.js
