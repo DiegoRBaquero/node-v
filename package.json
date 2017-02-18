@@ -1,6 +1,6 @@
 {
   "name": "v",
-  "description": "Secure, Synchronized, Realtime, Cloud Hosted, Native JavaScript Variables and Constants",
+  "description": "Secure, Synchronized, Realtime, Cloud, Native JavaScript Variables and Events",
   "version": "0.1.4",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
   "dependencies": {
@@ -42,8 +42,8 @@
     "deasync": "^0.1.9"
   },
   "scripts": {
-    "browserify": "browserify -s V -e ./index.js | babili > web/v.js",
-    "prepublish": "mkdir -p lib && babili index.js > lib/v.js ",
+    "browserify": "browserify -s V -e ./index.js | babili > v.min.js",
+    "prepublish": "mkdir -p lib && babili index.js > lib/v.js && npm run browserify",
     "pretest": "standard",
     "test": "nyc bogota",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
