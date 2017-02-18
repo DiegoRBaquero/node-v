@@ -178,6 +178,7 @@ class V extends EventEmitter {
         case 'error': {
           const errorMessage = message.data
           self._debug('Error: %s', errorMessage)
+          console.error(errorMessage)
           self.close()
           throw new Error(errorMessage)
         }
@@ -188,6 +189,7 @@ class V extends EventEmitter {
     }
     function onClose (reason) {
       self._debug('Socket closed %s', reason)
+      self._closed = true
     }
     function onError (err = 'Error') {
       self._debug('Socket error %s', err)
@@ -208,7 +210,6 @@ class V extends EventEmitter {
           this._socket.destroy()
         })
       })
-      this._closed = true
     }
   }
 
