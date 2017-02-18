@@ -87,7 +87,6 @@ class V extends EventEmitter {
                 data: val
               })
             }
-            self._debug('return true')
             return true
           } catch (e) {
             self._debug('Failed to set readonly property %o', e)
