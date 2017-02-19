@@ -4,37 +4,89 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/V.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
 [![Build Status](https://travis-ci.com/DiegoRBaquero/V.svg?token=RmCH18hHqxd9wdtEPyix&branch=master)](https://travis-ci.com/DiegoRBaquero/V) [![codecov](https://codecov.io/gh/DiegoRBaquero/V/branch/master/graph/badge.svg?token=uwf6VJzWlr)](https://codecov.io/gh/DiegoRBaquero/V)
 
-V extends your in-memory variables to also be saved/persisted instantly. Variables and constants are instantly synced
-between all your running instances of V. When you restart V, variables and constants are reloaded automatically.
+V extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
+between all running instances of V in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.
 
 ### Current Features
-- Keeps your variables in the cloud
-- Syncs variables between instances
-- Automatic variables rehidration (reloading)
+- Keep your variables in the cloud
+- Sync variables between instances
+- Automatic reloaded/rehidrated on start-up
 
-#### Requires ES6 Proxy (NodeJS 6+ and new browsers)
+#### Requires ES6 Proxy (Node 6+ and new browsers)
 
-### TODO:
+### Coming Soon:
 - Web GUI
 - History - Time machine
 - Events pub/sub
 
-## NodeJS Examples:
+## Install
 
-First: Get a new roomId (Web GUI soon), this will print your roomId on the console
-```js
-const V = require('v')
-const v = new v()
+### Node
+```sh
+npm install --save v
+or
+npm i -S v
 ```
 
-Then use it:
-```js
-const V = require('v')
-const v = new v('the-roomId-from-the-console')
-
-v.myVar = 5
-v.const('constant', 10)
-v.close
+### Browser
+Unpkg CDN:
+```html
+<script src="https://unpkg.com/v/v.min.js"></script>
 ```
 
-© Diego Rodríguez Baquero 2016 - 2017
+More CDNs coming soon
+
+## API
+
+### Constructor (3 Ways to do it)
+
+If no roomId is passed, a new one will be assigned automatically and printed in the console.
+
+##### NodeJS only with deasync support
+```js
+const V = require('v')
+const v = new V([roomId])
+```
+
+##### Callback
+```js
+const V = require('v')
+V([roomId,] v => {
+
+})
+```
+
+##### Promise
+```js
+const V = require('v')
+V([roomId]).then(v => {
+
+}).catch(e => {
+
+})
+```
+
+### Enable debug logs
+
+V comes with extensive debugging logs. Each v instance and constructor call has it own debug namespace.
+
+In **node**, enable debug logs by setting the `DEBUG` environment variable to `*`
+
+```bash
+DEBUG=* node myProgram.js
+```
+
+In the **browser**, enable debug logs by running this in the developer console:
+
+```js
+localStorage.debug = '*'
+```
+
+Disable by running this:
+
+```js
+localStorage.removeItem('debug')
+```
+
+## License
+MIT. Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
