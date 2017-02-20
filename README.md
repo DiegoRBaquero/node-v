@@ -69,9 +69,9 @@ V([roomId]).then(v => {
 })
 ```
 
-### Enable debug logs
+## Debug logs
 
-V comes with extensive debugging logs. Each v instance and constructor call has it own debug namespace.
+**V** comes with extensive debugging logs. Each **V** instance and constructor-call has it own debug namespace.
 
 In **node**, enable debug logs by setting the `DEBUG` environment variable to `*`
 
@@ -90,8 +90,6 @@ Disable by running this:
 ```js
 localStorage.removeItem('debug')
 ```
-
-[![Standard - JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
 ## License
 MIT. Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
