@@ -1,5 +1,4 @@
 <h1 align="center">
-  <br>
   <img src="https://raw.githubusercontent.com/DiegoRBaquero/v/master/logo.jpeg?token=AB6fNyMWytpgFAj65a1rUERhHF99P-viks5Ys6VMwA%3D%3D" />
   <br>
 </h1>
