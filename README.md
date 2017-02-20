@@ -93,5 +93,5 @@ localStorage.removeItem('debug')
 
 [![Standard - JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-## License [![npm](https://img.shields.io/npm/l/v.svg)](LICENSE)
+## License
 MIT. Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
