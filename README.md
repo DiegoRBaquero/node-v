@@ -1,10 +1,10 @@
-# v [![npm](https://img.shields.io/npm/v/v.svg)](https://npmjs.org/package/v) [![downloads](https://img.shields.io/npm/dm/v.svg)](https://npmjs.org/package/v) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![npm](https://img.shields.io/npm/l/v.svg)](LICENSE)
+# V
 #### 🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables & Events
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
+[![npm](https://img.shields.io/npm/v/v.svg)](https://npmjs.org/package/v) [![downloads](https://img.shields.io/npm/dm/v.svg)](https://npmjs.org/package/v) [![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
 [![Build Status](https://travis-ci.com/DiegoRBaquero/v.svg?token=RmCH18hHqxd9wdtEPyix&branch=master)](https://travis-ci.com/DiegoRBaquero/v) [![codecov](https://codecov.io/gh/DiegoRBaquero/v/branch/master/graph/badge.svg?token=uwf6VJzWlr)](https://codecov.io/gh/DiegoRBaquero/v)
 
-v extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
+V extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
 between all running instances of v in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.
 
 ### Current Features
@@ -88,5 +88,7 @@ Disable by running this:
 localStorage.removeItem('debug')
 ```
 
-## License
+[![Standard - JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
+
+## License [![npm](https://img.shields.io/npm/l/v.svg)](LICENSE)
 MIT. Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
