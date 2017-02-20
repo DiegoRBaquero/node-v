@@ -4,8 +4,8 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
 [![Build Status](https://travis-ci.com/DiegoRBaquero/v.svg?token=RmCH18hHqxd9wdtEPyix&branch=master)](https://travis-ci.com/DiegoRBaquero/v) [![codecov](https://codecov.io/gh/DiegoRBaquero/v/branch/master/graph/badge.svg?token=uwf6VJzWlr)](https://codecov.io/gh/DiegoRBaquero/v)
 
-V extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
-between all running instances of V in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.
+v extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
+between all running instances of v in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.
 
 ### Current Features
 - Keep your variables in the cloud
