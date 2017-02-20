@@ -1,11 +1,15 @@
-# V
-#### 🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables & Events
+<h1 align="center">
+  <br>
+  <img src="https://raw.githubusercontent.com/DiegoRBaquero/v/master/logo.jpeg?token=AB6fNyMWytpgFAj65a1rUERhHF99P-viks5Ys6VMwA%3D%3D" />
+  <br>
+</h1>
+<h4 align="center">🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables &amp; Events</h4>
 
-[![npm](https://img.shields.io/npm/v/v.svg)](https://npmjs.org/package/v) [![downloads](https://img.shields.io/npm/dm/v.svg)](https://npmjs.org/package/v) [![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
-[![Build Status](https://travis-ci.com/DiegoRBaquero/v.svg?token=RmCH18hHqxd9wdtEPyix&branch=master)](https://travis-ci.com/DiegoRBaquero/v) [![codecov](https://codecov.io/gh/DiegoRBaquero/v/branch/master/graph/badge.svg?token=uwf6VJzWlr)](https://codecov.io/gh/DiegoRBaquero/v)
+<p align="center"><a href="https://npmjs.org/package/v"><img src="https://img.shields.io/npm/v/v.svg" alt="npm" /></a> <a href="https://npmjs.org/package/v"><img src="https://img.shields.io/npm/dm/v.svg" alt="downloads" /></a> <a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2" alt="Greenkeeper badge" /></a> 
+<a href="https://travis-ci.com/DiegoRBaquero/v"><img src="https://travis-ci.com/DiegoRBaquero/v.svg?token=RmCH18hHqxd9wdtEPyix&amp;branch=master" alt="Build Status" /></a> <a href="https://codecov.io/gh/DiegoRBaquero/v"><img src="https://codecov.io/gh/DiegoRBaquero/v/branch/master/graph/badge.svg?token=uwf6VJzWlr" alt="codecov" /></a></p>
 
-V extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
-between all running instances of v in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.
+<p align="justify"><strong>V</strong> extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
+between all running instances of <strong>V</strong> in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.</p>
 
 ### Current Features
 - Keep your variables in the cloud
