@@ -1,4 +1,4 @@
-# V [![npm](https://img.shields.io/npm/v/v.svg)](https://npmjs.org/package/v) [![downloads](https://img.shields.io/npm/dm/v.svg)](https://npmjs.org/package/v) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![npm](https://img.shields.io/npm/l/v.svg)](LICENSE)
+# v [![npm](https://img.shields.io/npm/v/v.svg)](https://npmjs.org/package/v) [![downloads](https://img.shields.io/npm/dm/v.svg)](https://npmjs.org/package/v) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/) [![npm](https://img.shields.io/npm/l/v.svg)](LICENSE)
 #### 🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables & Events
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/DiegoRBaquero/V.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2)](https://greenkeeper.io/) 
