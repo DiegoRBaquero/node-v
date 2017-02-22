@@ -69,6 +69,21 @@ V([roomId]).then(v => {
 })
 ```
 
+#### Custom Opts
+
+The `opts` object has the following options and their default options listed
+```js
+myOpts = {
+  roomId: '',
+  server: 'wss://api.online.vars'
+}
+```
+
+Use it:
+```js
+const v = new V(myopts)
+```
+
 ## Debug logs
 
 **V** comes with extensive debugging logs. Each **V** instance and constructor-call has it own debug namespace.
