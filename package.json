@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "babili": "0.0.11",
-    "bogota": "^1.0.3",
+    "bogota": "^2.0.1",
     "codecov": "^1.0.1",
     "nyc": "^10.1.2",
     "standard": "^8.6.0",
