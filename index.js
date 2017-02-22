@@ -12,7 +12,7 @@ let instanceCounter = 1
 let consCounter = 1
 
 class V extends EventEmitter {
-  constructor (roomId, cb) {
+  constructor (opts, cb) {
     super()
 
     const self = this
@@ -27,11 +27,11 @@ class V extends EventEmitter {
       writable: true
     })
 
-    self._debug('constructor %s', roomId)
+    self._debug('constructor %o', opts)
 
     let proxy
 
-    const ws = new _WebSocket('wss://api.vars.online')
+    const ws = new _WebSocket(opts.server)
 
     Object.defineProperty(this, '_socket', { value: ws })
 
@@ -41,13 +41,13 @@ class V extends EventEmitter {
     ws.on('connect', () => {
       self._debug('Socket opened')
 
-      if (!roomId) {
+      if (!opts.roomId) {
         self._debug('Requesting new roomId...')
         self._requestedRoomId = true
         send({ type: 'requestRoomId' })
       } else {
-        Object.defineProperty(self, '_roomId', { value: roomId })
-        send({ type: 'startWithId', data: roomId })
+        Object.defineProperty(self, '_roomId', { value: opts.roomId })
+        send({ type: 'startWithId', data: opts.roomId })
       }
     })
 
@@ -191,8 +191,8 @@ class V extends EventEmitter {
       self._debug('Socket closed %s', reason)
       self._closed = true
     }
-    function onError (err = 'Error') {
-      self._debug('Socket error %s', err)
+    function onError (err) {
+      self._debug('Socket error %o', err)
       self.close()
       throw err
     }
@@ -230,15 +230,26 @@ function stringify (data) {
   return JSON.stringify(data)
 }
 
-module.exports = function _V (roomId = '', cb) {
+const defaultsOps = {
+  roomId: '',
+  server: 'wss://api.vars.online'
+}
+
+module.exports = function _V (opts = defaultsOps, cb) {
   // If only callback is passed, fix params
-  if (typeof roomId === 'function') {
-    cb = roomId
-    roomId = ''
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = defaultsOps
   }
+  if (typeof opts === 'string') {
+    opts = { roomId: opts }
+  }
+  Object.keys(defaultsOps).forEach(k => {
+    if (!opts[k]) opts[k] = defaultsOps[k]
+  })
   if (cb || !deasync || !deasync.loopWhile) {
-    if (typeof cb === 'function') return new V(roomId, cb)
-    return new Promise(resolve => new V(roomId, resolve))
+    if (typeof cb === 'function') return new V(opts, cb)
+    return new Promise(resolve => new V(opts, resolve))
   }
-  return new V(roomId)
+  return new V(opts)
 }
