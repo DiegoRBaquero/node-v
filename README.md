@@ -81,7 +81,7 @@ myOpts = {
 
 Use it:
 ```js
-const v = new V(myopts)
+const v = new V(myOpts)
 ```
 
 ## Debug logs
