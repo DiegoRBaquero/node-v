@@ -36,14 +36,14 @@
     "variable",
     "variables"
   ],
-  "license": "MIT",
-  "main": "lib/v.js",
+  "license": "GPL-3.0",
+  "main": "index.js",
   "optionalDependencies": {
     "deasync": "^0.1.9"
   },
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > v.min.js",
-    "prepublish": "mkdir -p lib && babili index.js > lib/v.js && npm run browserify",
+    "prepublish": "npm run browserify",
     "pretest": "standard",
     "test": "nyc bogota",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
