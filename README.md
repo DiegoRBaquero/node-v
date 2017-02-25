@@ -5,7 +5,7 @@
 <h4 align="center">🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables &amp; Events</h4>
 
 <p align="center"><a href="https://npmjs.org/package/v"><img src="https://img.shields.io/npm/v/v.svg" alt="npm" /></a> <a href="https://npmjs.org/package/v"><img src="https://img.shields.io/npm/dm/v.svg" alt="downloads" /></a> <a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/DiegoRBaquero/v.svg?token=a422ad2d4e68470f999284e20bc6a0f1936468ebfcb74c157a65c2a54037e0d2" alt="Greenkeeper badge" /></a> 
-<a href="https://travis-ci.com/DiegoRBaquero/v"><img src="https://travis-ci.com/DiegoRBaquero/v.svg?token=RmCH18hHqxd9wdtEPyix&amp;branch=master" alt="Build Status" /></a> <a href="https://codecov.io/gh/DiegoRBaquero/v"><img src="https://codecov.io/gh/DiegoRBaquero/v/branch/master/graph/badge.svg?token=uwf6VJzWlr" alt="codecov" /></a></p>
+<a href="https://travis-ci.org/DiegoRBaquero/V"><img src="https://travis-ci.org/DiegoRBaquero/V.svg?branch=master" alt="Build Status" /></a> <a href="https://codecov.io/gh/DiegoRBaquero/V"><img src="https://codecov.io/gh/DiegoRBaquero/V/branch/master/graph/badge.svg" alt="codecov" /></a></p>
 
 <p align="justify"><strong>V</strong> extends your in-memory variables to also be saved/persisted instantly. Variables are instantly synchronized
 between all running instances of <strong>V</strong> in a room. When you (re)start in a room, variables and constants are reloaded/rehidrated automatically.</p>
