@@ -107,4 +107,4 @@ localStorage.removeItem('debug')
 ```
 
 ## License
-MIT. Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
+GPL-3.0 Copyright © [Diego Rodríguez Baquero](https://diegorbaquero.com)
