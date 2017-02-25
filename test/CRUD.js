@@ -60,4 +60,3 @@ test('CRUD - String & Number', t => {
   t.equal(v.b, undefined, '`b` key is undefined')
   v.destroy()
 })
-
