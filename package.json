@@ -3,6 +3,12 @@
   "description": "Secure, Synchronized, Realtime, Cloud, Native JavaScript Variables & Events",
   "version": "0.2.3",
   "author": "Diego Rodríguez Baquero <diegorbaquero@gmail.com> (https://diegorbaquero.com)",
+  "browser": {
+    "deasync": false
+  },
+  "bugs": {
+    "url": "https://github.com/DiegoRBaquero/V/issues"
+  },
   "dependencies": {
     "debug": "^2.6.1",
     "simple-websocket": "^5.0.0"
@@ -19,6 +25,7 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "homepage": "https://vars.online",
   "keywords": [
     "app",
     "application",
@@ -41,14 +48,15 @@
   "optionalDependencies": {
     "deasync": "^0.1.9"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:DiegoRBaquero/V.git"
+  },
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > v.min.js",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "prepublish": "npm run browserify",
     "pretest": "standard",
-    "test": "nyc bogota",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
-  },
-  "browser": {
-    "deasync": false
+    "test": "nyc bogota"
   }
 }
