@@ -13,7 +13,7 @@ between all running instances of <strong>V</strong> in a room. When you (re)star
 ### Current Features
 - Keep your variables in the cloud
 - Sync variables between instances
-- Automatic reloaded/rehidrated on start-up
+- Automatic reloaded/rehydrated on start-up
 
 #### Requires ES6 Proxy (Node 6+ and new browsers)
 
