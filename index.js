@@ -18,8 +18,8 @@ class V extends EventEmitter {
     const self = this
 
     // Hide EventEmitter properties from enumeration
-    Object.defineProperty(self, '_events', { value: self._events, enumerable: false, configurable: false, writable: false })
-    Object.defineProperty(self, '_maxListeners', { value: self._events, enumerable: false, configurable: false, writable: false })
+    Object.defineProperty(self, '_events', { value: self._events, enumerable: false, configurable: false, writable: true })
+    Object.defineProperty(self, '_maxListeners', { value: self._events, enumerable: false, configurable: false, writable: true })
 
     // Define numerated contructor debug object
     Object.defineProperty(self, '_debug', {
@@ -33,7 +33,7 @@ class V extends EventEmitter {
 
     const ws = new _WebSocket(opts.server)
 
-    Object.defineProperty(this, '_socket', { value: ws })
+    Object.defineProperty(self, '_socket', { value: ws, writable: true })
 
     ws.on('data', onMessage)
     ws.on('close', onClose)
@@ -61,11 +61,12 @@ class V extends EventEmitter {
       // self._debug('new handler %o', tree)
       return {
         get (obj, key) {
-          if (typeof key === 'symbol') return obj[key]
+          if (typeof key === 'symbol' || key === 'domain' || key === 'keys') return obj[key]
           const treeKey = tree.concat([key]).join('.')
           if (!key.startsWith('_')) self._debug('get %s', treeKey)
           if (key in obj) {
             if (!key.startsWith('_') && typeof obj[key] === 'object') {
+              self._debug('New proxy for key %s', key)
               const newTree = tree.slice()
               newTree.push(key)
               return new Proxy(obj[key], handler(newTree))
@@ -107,7 +108,7 @@ class V extends EventEmitter {
         }
       }
     }
-    function send (data, sendingWs = ws) {
+    function send (data, sendingWs = self._socket) {
       self._debug('Sending %o', data)
       sendingWs.send(JSON.stringify(data))
     }
@@ -117,10 +118,22 @@ class V extends EventEmitter {
       init()
     }
     function init () {
-      Object.defineProperty(self, '_debug', {
-        value: _debug('v' + instanceCounter++ + ':' + self._roomId)
+      Object.defineProperty(self, 'keys', {
+        get () {
+          return Object.keys(self).filter(key => !key.startsWith('_') && key !== 'domain')
+        }
       })
+
+      if (!self._closed) {
+        Object.defineProperty(self, '_debug', {
+          value: _debug('v' + instanceCounter++ + ':' + self._roomId)
+        })
+      }
+      self._closed = false
       proxy = new Proxy(self, handler())
+      if (self._socket._ws && self._socket._ws._socket && self._socket._ws._socket.unref) {
+        self._socket._ws._socket.unref()
+      }
       self._debug('Ready')
       if (cb) return cb(proxy)
     }
@@ -156,7 +169,21 @@ class V extends EventEmitter {
           const setKey = message.key
           self._debug('sync set %s', setKey)
           try {
-            self[ setKey ] = message.data
+            if (!setKey.includes('.')) {
+              self[ setKey ] = message.data
+            } else {
+              const tree = setKey.split('.')
+              let obj = self
+              for (let i = 0; i < tree.length - 1; i++) {
+                let k = tree[i]
+                if (k in obj) {
+                  obj = obj[k]
+                } else {
+                  obj[k] = {}
+                }
+              }
+              obj[tree[tree.length - 1]] = message.data
+            }
             self.emit('set', { key: message.key, value: message.data })
           } catch (e) {
             self._debug('Failed to sync set')
@@ -166,7 +193,21 @@ class V extends EventEmitter {
         case 'delete': {
           const deleteKey = message.key
           self._debug('sync delete %s', deleteKey)
-          delete self[ deleteKey ]
+          if (!deleteKey.includes('.')) {
+            delete self[ deleteKey ]
+          } else {
+            const tree = deleteKey.split('.')
+            let obj = self
+            for (let i = 0; i < tree.length - 1; i++) {
+              let k = tree[i]
+              if (k in obj) {
+                obj = obj[k]
+              } else {
+                obj[k] = {}
+              }
+            }
+            delete obj[tree[tree.length - 1]]
+          }
           self.emit('delete', message.key)
           break
         }
@@ -187,18 +228,95 @@ class V extends EventEmitter {
         }
       }
     }
-    function onClose (reason) {
+    function onClose (reason = 'Not specified') {
       self._debug('Socket closed %s', reason)
       self._closed = true
+      if (!self._closing && !self._error) {
+        reconnect()
+      }
     }
     function onError (err) {
       self._debug('Socket error %o', err)
+      self._error = true
       self.close()
       throw err
+    }
+    function reconnect (retry = 1) {
+      if (self._closing || self._error) return false
+      setTimeout(() => {
+        const ws = new _WebSocket(opts.server)
+
+        Object.defineProperty(self, '_socket', { value: ws, writable: true })
+
+        ws.on('error', () => {
+          self._debug('Failed to reconnect, retrying...')
+          reconnect(++retry)
+        })
+        ws.on('connect', () => {
+          ws.on('data', onMessage)
+          ws.on('close', onClose)
+          self._debug('Socket opened')
+          send({ type: 'startWithId', data: self._roomId })
+        })
+      }, Math.pow(2, retry) * 1000)
+    }
+  }
+
+  addListener (eventName, cb) {
+    this.ref()
+    super.addListener(eventName, cb)
+  }
+
+  on (eventName, cb) {
+    this.ref()
+    super.on(eventName, cb)
+  }
+
+  once (eventName, cb) {
+    this.ref()
+    super.once(eventName, (data) => {
+      cb(data)
+    })
+  }
+
+  prependListener (eventName, cb) {
+    this.ref()
+    super.prependListener(eventName, cb)
+  }
+
+  prependOnceListener (eventName, cb) {
+    this.ref()
+    super.prependOnceListener(eventName, cb)
+  }
+
+  removeListener (eventName, cb) {
+    super.removeListener(eventName, cb)
+    this.checkToUnref()
+  }
+
+  removeAllListeners (eventName) {
+    super.removeAllListeners(eventName)
+    this.checkToUnref()
+  }
+
+  ref () {
+    if (this._socket._ws && this._socket._ws._socket && this._socket._ws._socket.ref) {
+      this._socket._ws._socket.ref()
+    }
+  }
+
+  checkToUnref () {
+    if (this._socket._ws && this._socket._ws._socket && this._socket._ws._socket.unref) {
+      let counter = 0
+      this.eventNames().forEach(event => {
+        counter += this.listenerCount(event)
+      })
+      if (!counter) this._socket._ws._socket.unref()
     }
   }
 
   close (destroying = false) {
+    this._closing = true
     this._debug('close')
     if (!destroying && this._requestedRoomId) {
       this._debug('Remember to set your roomId to %s', this._roomId)
@@ -220,10 +338,6 @@ class V extends EventEmitter {
     Object.defineProperty(this, key, { value: val, enumerable: true })
     this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
   }
-
-  keys () {
-    return Object.keys(this).filter(key => !key.startsWith('_') && key !== 'domain')
-  }
 }
 
 function stringify (data) {
@@ -235,7 +349,7 @@ const defaultsOps = {
   server: 'wss://api.vars.online'
 }
 
-module.exports = function _V (opts = defaultsOps, cb) {
+module.exports = function (opts = defaultsOps, cb) {
   // If only callback is passed, fix params
   if (typeof opts === 'function') {
     cb = opts
