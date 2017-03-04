@@ -131,9 +131,7 @@ class V extends EventEmitter {
       }
       self._closed = false
       proxy = new Proxy(self, handler())
-      if (self._socket._ws && self._socket._ws._socket && self._socket._ws._socket.unref) {
-        self._socket._ws._socket.unref()
-      }
+      self.checkToUnref()
       self._debug('Ready')
       if (cb) return cb(proxy)
     }
