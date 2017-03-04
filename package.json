@@ -14,11 +14,11 @@
     "simple-websocket": "^5.0.0"
   },
   "devDependencies": {
-    "babili": "0.0.11",
-    "bogota": "^2.0.1",
+    "babili": "0.0.12",
+    "bogota": "^2.0.4",
     "codecov": "^1.0.1",
     "nyc": "^10.1.2",
-    "standard": "^8.6.0",
+    "standard": "^9.0.0",
     "tape": "^4.6.3"
   },
   "engineStrict": true,
@@ -54,6 +54,7 @@
   },
   "scripts": {
     "browserify": "browserify -s V -e ./index.js | babili > v.min.js",
+    "browserify-debug": "browserify -s V -e ./index.js > web/v.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "prepublish": "npm run browserify",
     "pretest": "standard",
