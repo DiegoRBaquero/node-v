@@ -17,7 +17,7 @@ test('Sync - Destroy', t => {
   t.equals(v2.a, 10, 'Value is the same after rehidration')
 
   v.destroy()
-  v2.on('destroyed', () => {
+  v2.once('destroyed', () => {
     t.true(v2._closed, 'Destroy instanceCounter propagated correctly')
   })
 })

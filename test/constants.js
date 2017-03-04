@@ -22,7 +22,6 @@ test('Constants - Persisted', t => {
 
   v.const('c', 10)
   t.equals(v.c, 10, 'Value is saved')
-  v.close()
 
   v = new V(uuid)
   t.pass('Construct with same roomId worked')

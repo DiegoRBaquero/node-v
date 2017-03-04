@@ -14,7 +14,6 @@ test('New V callback - Non existent roomId', t => {
   t.plan(1)
   try {
     V('this-will-fail', v => {
-      v.close()
       t.fail('Construct with a non existent roomId worked')
     })
   } catch (e) {
@@ -35,7 +34,6 @@ test('New V promise - No roomId', t => {
 test('New V promise - Non existent roomId', t => {
   t.plan(1)
   V('this-will-fail', 'promise').then(v => {
-    v.close()
     t.fail('Construct with a non existent roomId worked')
   }).catch(e => {
     t.ok(e, 'Failed to construct with non existent roomId')

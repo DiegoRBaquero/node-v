@@ -17,10 +17,9 @@ test('Sync - Set', t => {
   t.equals(v2.a, 10, 'Value is the same after rehidration')
 
   v.a = 20
-  v2.on('set', update => {
+  v2.once('set', update => {
     console.log(update)
     t.equals(v2.a, 20, 'Set value propagated correctly')
-    v2.close()
     v.destroy()
   })
 })

@@ -17,9 +17,8 @@ test('Sync - Delete', t => {
   t.equals(v2.a, 10, 'Value is the same after rehidration')
 
   delete v.a
-  v2.on('delete', () => {
+  v2.once('delete', () => {
     t.equals(v2.a, undefined, 'Delete value propagated correctly')
-    v2.close()
     v.destroy()
   })
 })

@@ -22,7 +22,6 @@ test('Variables - Number Persisted', t => {
 
   v.a = 10
   t.equals(v.a, 10, 'Value is saved')
-  v.close()
 
   v = new V(roomId)
   t.pass('Construct with same roomId worked')
@@ -52,7 +51,6 @@ test('Variables - String Persisted', t => {
 
   v.a = 'string'
   t.equals(v.a, 'string', 'Value is saved')
-  v.close()
 
   v = new V(roomId)
   t.pass('Construct with same roomId worked')
@@ -82,7 +80,6 @@ test('Variables - Object Persisted', t => {
 
   v.a = { b: 1, c: 'woot' }
   t.deepEquals(v.a, { b: 1, c: 'woot' }, 'Value is saved')
-  v.close()
 
   v = new V(roomId)
   t.pass('Construct with same roomId worked')

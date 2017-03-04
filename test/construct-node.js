@@ -13,7 +13,7 @@ test('New V deasync - Non existent roomId', t => {
   t.plan(1)
   try {
     const v = new V('this-will-fail')
-    v.close()
+    v.destroy()
     t.fail('Construct with a non existent roomId worked')
   } catch (e) {
     t.pass('Failed to construct with non existent roomId')
