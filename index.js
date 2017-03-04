@@ -118,15 +118,14 @@ class V extends EventEmitter {
       init()
     }
     function init () {
-      Object.defineProperty(self, 'keys', {
-        get () {
-          return Object.keys(self).filter(key => !key.startsWith('_') && key !== 'domain')
-        }
-      })
-
       if (!self._closed) {
         Object.defineProperty(self, '_debug', {
           value: _debug('v' + instanceCounter++ + ':' + self._roomId)
+        })
+        Object.defineProperty(self, 'keys', {
+          get () {
+            return Object.keys(self).filter(key => !key.startsWith('_') && key !== 'domain')
+          }
         })
       }
       self._closed = false
