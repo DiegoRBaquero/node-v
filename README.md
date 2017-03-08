@@ -31,6 +31,11 @@ npm i -S v
 ```
 
 ### Browser
+jsDelivr CDN:
+```html
+<script src="https://cdn.jsdelivr.net/v/latest/v.min.js"></script>
+```
+
 Unpkg CDN:
 ```html
 <script src="https://unpkg.com/v/v.min.js"></script>
@@ -74,7 +79,7 @@ The `opts` object has the following options and their default options listed
 ```js
 myOpts = {
   roomId: '',
-  server: 'wss://api.online.vars'
+  server: 'ws(s)://my-domain.com'
 }
 ```
 
