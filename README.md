@@ -79,7 +79,7 @@ The `opts` object has the following options and their default options listed
 ```js
 myOpts = {
   roomId: '',
-  server: 'wss://api.online.vars'
+  server: 'ws(s)://my-domain.com'
 }
 ```
 
