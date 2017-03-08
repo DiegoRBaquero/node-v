@@ -44,7 +44,7 @@ More CDNs coming soon
 
 If no roomId is passed, a new one will be assigned automatically and printed in the console.
 
-##### NodeJS only with deasync support
+##### NodeJS **only** with deasync support
 ```js
 const V = require('v')
 const v = new V([roomId])
@@ -54,7 +54,7 @@ const v = new V([roomId])
 ```js
 const V = require('v')
 V([roomId,] v => {
-
+  ...
 })
 ```
 
@@ -62,9 +62,9 @@ V([roomId,] v => {
 ```js
 const V = require('v')
 V([roomId]).then(v => {
-
+  ...
 }).catch(e => {
-
+  ...
 })
 ```
 

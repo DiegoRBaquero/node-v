@@ -110,7 +110,7 @@ class V extends EventEmitter {
     }
     function send (data, sendingWs = self._socket) {
       self._debug('Sending %o', data)
-      sendingWs.send(JSON.stringify(data))
+      sendingWs.send(stringify(data))
     }
     function initWithId (id) {
       self._debug('Init with id: %s', id)
@@ -333,7 +333,7 @@ class V extends EventEmitter {
   const (key, val) {
     _debug('V:const')('%s %o', key, val)
     Object.defineProperty(this, key, { value: val, enumerable: true })
-    this._socket.send(JSON.stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
+    this._socket.send(stringify({ type: 'set', key: key, data: { val: val, isConst: true } }))
   }
 }
 
