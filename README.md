@@ -31,6 +31,11 @@ npm i -S v
 ```
 
 ### Browser
+jsDelivr CDN:
+```html
+<script src="https://cdn.jsdelivr.net/v/latest/v.min.js"></script>
+```
+
 Unpkg CDN:
 ```html
 <script src="https://unpkg.com/v/v.min.js"></script>
