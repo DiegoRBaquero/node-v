@@ -60,5 +60,10 @@
     "prepublish": "npm run browserify",
     "pretest": "standard",
     "test": "nyc bogota"
+  },
+  "standard": {
+    "ignore": [
+      "v.js"
+    ]
   }
 }
