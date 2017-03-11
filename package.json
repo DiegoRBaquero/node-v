@@ -53,7 +53,7 @@
     "url": "git@github.com:DiegoRBaquero/V.git"
   },
   "scripts": {
-    "browserify": "browserify -s V -e ./index.js | babili > v.min.js",
+    "browserify": "browserify -s V -e ./index.js > v.js && babili v.js > v.min.js",
     "browserify-debug": "browserify -s V -e ./index.js > web/v.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "prepublish": "npm run browserify",
