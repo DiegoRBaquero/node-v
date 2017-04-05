@@ -19,7 +19,7 @@
     "browserify": "^14.1.0",
     "codecov": "^2.0.1",
     "nyc": "^10.1.2",
-    "standard": "^9.0.0",
+    "standard": "^10.0.0",
     "tape": "^4.6.3"
   },
   "engineStrict": true,
