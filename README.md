@@ -33,7 +33,7 @@ npm i -S v
 ### Browser
 jsDelivr CDN:
 ```html
-<script src="https://cdn.jsdelivr.net/v/latest/v.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/v@latest/v.min.js"></script>
 ```
 
 Unpkg CDN:
