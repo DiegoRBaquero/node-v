@@ -7,7 +7,7 @@
     "deasync": false
   },
   "bugs": {
-    "url": "https://github.com/DiegoRBaquero/V/issues"
+    "url": "https://github.com/DiegoRBaquero/node-v/issues"
   },
   "dependencies": {
     "debug": "^2.6.1",
@@ -26,7 +26,6 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "homepage": "https://vars.online",
   "keywords": [
     "app",
     "application",
@@ -44,14 +43,14 @@
     "variable",
     "variables"
   ],
-  "license": "GPL-3.0",
+  "license": "MIT",
   "main": "index.js",
   "optionalDependencies": {
     "deasync": "^0.1.9"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:DiegoRBaquero/V.git"
+    "url": "git@github.com:DiegoRBaquero/node-v.git"
   },
   "scripts": {
     "browserify": "browserify -s V -e ./index.js > v.js && babili v.js > v.min.js",
