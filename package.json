@@ -17,7 +17,7 @@
     "babili": "0.1.4",
     "bogota": "^2.0.4",
     "browserify": "^14.1.0",
-    "codecov": "^2.0.1",
+    "codecov": "^3.0.0",
     "nyc": "^11.2.1",
     "standard": "^10.0.0",
     "tape": "^4.6.3"
