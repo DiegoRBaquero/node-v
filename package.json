@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "debug": "^3.1.0",
-    "simple-websocket": "^5.0.0"
+    "simple-websocket": "^6.0.0"
   },
   "devDependencies": {
     "babili": "0.1.4",
