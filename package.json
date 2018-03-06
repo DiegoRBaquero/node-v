@@ -16,7 +16,7 @@
   "devDependencies": {
     "babili": "0.1.4",
     "bogota": "^2.0.4",
-    "browserify": "^16.0.0",
+    "browserify": "^16.1.1",
     "codecov": "^3.0.0",
     "nyc": "^11.2.1",
     "standard": "^11.0.0",
