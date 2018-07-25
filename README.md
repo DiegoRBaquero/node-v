@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://vars.online"><img src="https://vars.online/logo.svg" alt="V Logo" width="180" /></a>
+  <img src="https://github.com/DiegoRBaquero/node-v/blob/master/logo.svg" alt="V Logo" width="180" />
   <br>
 </h1>
 <h4 align="center">🔒 Secure ❄️ Synchronized ⚡️ Realtime ☁️ Cloud 🌈 Native JavaScript Variables &amp; Events</h4>
